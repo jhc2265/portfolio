@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사각사각문구점 — Web Design | JO HYEON CHAE</title>
+  <style>
+    :root {
+      --bg: #fdf6f0; --ink: #4a3b34; --muted: #a58d80; --line: #f0e2d8;
+      --panel: #fffaf6; --accent: #e8927c; --accent-2: #cf6b52;
+      font-family: Inter, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+
+      /* Body typography — the ?tune panel writes these three at runtime.
+         Every body-copy rule reads them, so a change here is the only edit
+         needed; nothing else hard-codes a size, leading or measure. */
+      --body-lh: 1.85;
+      --body-size: 16px;
+      --body-measure: 900px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    /* The page fills the viewport so backgrounds, rules and the nav reach both
+       edges. Each top-level section adds --gutter to its own inline padding,
+       which keeps the content itself on a centred 1440px grid. Below 1440px the
+       gutter is 0, so narrow screens behave exactly as before. */
+    .page { --gutter: max(0px, (100% - 1440px) / 2); width: 100%; background: var(--bg); }
+    .nav { position: sticky; top: 0; z-index: 10; height: 72px; padding: 0 calc(48px + var(--gutter)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); background: rgba(253,246,240,0.9); backdrop-filter: blur(12px); letter-spacing: 0.12em; font-size: 13px; font-weight: 700; }
+    .nav .back { display: flex; align-items: center; gap: 10px; } .nav .back:hover, .nav-links a:hover { color: var(--accent-2); }
+    .nav-links { color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px; border-radius: 999px; font-size: 14px; font-weight: 800; transition: transform 0.15s ease; }
+    .btn.solid { background: var(--accent); color: #fff; } .btn.solid:hover { transform: translateY(-2px); }
+    .hero {
+      padding-inline: var(--gutter); display: grid; grid-template-columns: 0.88fr 1.12fr; min-height: calc(100vh - 72px); border-bottom: 1px solid var(--line);
+      /* Graph-paper ground, drawn in the brand accent so it reads as stationery
+         rather than a UI grid. Deliberately a single even cell: heavier rules
+         every few lines made the large squares read as boxes behind the mockup.
+         Gradients rather than an image keep the lines crisp at any zoom. */
+      --grid-line: rgba(207, 107, 82, 0.07);
+      background-color: var(--bg);
+      background-image:
+        repeating-linear-gradient(0deg,  var(--grid-line) 0 1px, transparent 1px 26px),
+        repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 26px);
+    }
+    .hero-text { padding: 64px 72px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+    .eyebrow { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-2); }
+    .title { margin: 4px 0 0; font-size: clamp(40px, 5.6vw, 82px); line-height: 1.02; letter-spacing: -0.04em; font-weight: 900; }
+    .subtitle { margin: 6px 0 0; font-size: 20px; font-weight: 700; color: var(--accent-2); }
+    .desc { margin: 4px 0 0; max-width: 520px; color: var(--muted); font-size: 16px; word-break: keep-all; }
+    .hero-cta { margin-top: 12px; }
+    .hero-visual { overflow: hidden; background: #fff; } .hero-visual img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Stationery doodles scattered over the graph paper. They sit behind the
+       mockup (z-index 0 vs 1), so several are half-hidden by it — that overlap
+       is what stops the arrangement reading as three deliberately placed icons.
+       Left offsets ride --gutter to stay on the content grid. Anything past
+       content x 580 clears the copy at every hero height; the two in the left
+       column use px edge offsets because that free strip is only ~64px tall.
+       Durations and float distances are all different so nothing bobs in sync. */
+    .hero { position: relative; overflow: clip; }
+    .hero-text, .hero-visual { position: relative; z-index: 1; }
+    .deco {
+      position: absolute; z-index: 0;
+      opacity: 0.5;
+      pointer-events: none; user-select: none;
+      animation: decoSway var(--t, 7s) ease-in-out infinite;
+      will-change: transform;
+    }
+    /* Sway, not bob: these read as pencil marks on paper, and paper doesn't
+       float. Rotation carries the motion; the few px of drift stop it looking
+       like a gear turning in place. */
+    @keyframes decoSway {
+      0%, 100% { transform: translateY(0) rotate(calc(var(--r, 0deg) - var(--s, 3deg))); }
+      50%      { transform: translateY(calc(var(--d, 3px) * -1)) rotate(calc(var(--r, 0deg) + var(--s, 3deg))); }
+    }
+    @media (prefers-reduced-motion: reduce) { .deco { animation: none; } }
+    /* Stacked hero leaves no free space beside the copy */
+    @media (max-width: 900px) { .deco { display: none; } }
+    .section { padding: 72px 48px; border-bottom: 1px solid var(--line); }
+    /* direct children only: .section also appears nested inside .detail-layout,
+       which supplies the gutter itself */
+    .page > :where(.section) { padding-inline: calc(48px + var(--gutter)); }
+    .kicker { margin: 0 0 12px; font-size: 12px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-2); }
+    .section h2 { margin: 0 0 16px; font-size: clamp(26px, 4vw, 44px); line-height: 1.06; letter-spacing: -0.03em; font-weight: 900; }
+    .section p.lead { max-width: 760px; margin: 0; color: #5a4a42; font-size: 16px; word-break: keep-all; }
+    .section p.lead + p.lead { margin-top: 12px; } .section b { color: var(--accent-2); }
+    .shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 30px; }
+    .shot { position: relative; border: 1px solid var(--line); overflow: hidden; background: var(--panel); }
+    .shot img { width: 100%; aspect-ratio: 16/10; object-fit: cover; transition: transform 0.5s ease; } .shot:hover img { transform: scale(1.04); }
+    .shot figcaption { position: absolute; left: 0; bottom: 0; padding: 7px 13px; font-size: 12px; font-weight: 700; background: rgba(74,59,52,0.7); color: #fff; }
+    .build { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 30px; }
+    .build-card { border: 1px solid var(--line); background: var(--panel); padding: 22px; }
+    .build-card h3 { margin: 0 0 8px; font-size: 17px; color: var(--accent-2); } .build-card p { margin: 0; color: var(--muted); font-size: 14.5px; word-break: keep-all; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+    .chips span { border: 1px solid var(--line); color: var(--muted); font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px; }
+    .cta-band { padding: 64px calc(48px + var(--gutter)); text-align: center; border-bottom: 1px solid var(--line); }
+    .cta-band h2 { margin: 0 0 22px; font-size: clamp(24px, 4vw, 40px); font-weight: 900; letter-spacing: -0.03em; } .cta-band h2 span { color: var(--accent-2); }
+    .bottom-nav { display: grid; grid-template-columns: 1fr 1fr; padding-inline: var(--gutter); }
+    .bottom-nav a { padding: 30px 48px; border-right: 1px solid var(--line); font-size: 16px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; } .bottom-nav a:last-child { border-right: 0; } .bottom-nav a:hover { color: var(--accent-2); }
+    .bottom-nav .next-label { display: flex; flex-direction: column; gap: 5px; }
+    .bottom-nav .next-label em { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .bottom-nav .next-label strong { font-weight: 800; }
+    @media (max-width: 900px) { .nav { padding: 0 20px; } .hero { grid-template-columns: 1fr; } .hero-text { border-right: 0; border-bottom: 1px solid var(--line); padding: 48px 24px; } .hero-visual { min-height: 300px; } .section, .cta-band { padding: 48px 24px; } .shots, .build, .bottom-nav { grid-template-columns: 1fr; } }
+    /* Project Info meta (팀 페이지와 구조 통일) */
+    .meta-row { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); margin-top: 26px; }
+    .meta-item { padding: 20px 0; border-bottom: 1px solid var(--line); }
+    .meta-item:nth-child(odd) { padding-right: 28px; }
+    .meta-label { display: block; margin-bottom: 10px; color: var(--muted); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+    .meta-value { font-size: 16px; font-weight: 700; line-height: 1.6; word-break: keep-all; }
+    .meta-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .meta-tags span { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 700; color: var(--accent-2); }
+    @media (max-width: 900px) { .meta-row { grid-template-columns: 1fr; } .meta-item:nth-child(odd) { padding-right: 0; } }
+
+    /* ==== Live device mockups (PC + phone, hover scroll) ==== */
+    /* Transparent, not var(--bg): an opaque fill here cut the graph paper off at
+       the column edge and read as a hard rectangle behind the mockup. A soft
+       radial wash gives the screenshot the same lift with no visible edge. */
+    .hero-visual {
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px 44px; overflow: visible;
+      background: radial-gradient(58% 52% at 52% 48%, rgba(232,146,124,0.13) 0%, rgba(232,146,124,0.05) 55%, rgba(232,146,124,0) 78%);
+    }
+    .hero-visual::after { content: none !important; display: none !important; }
+    .hero-devices { position: relative; width: 100%; max-width: 640px; margin: 0 auto; }
+    .hero-browser { width: 100%; }
+    .browser { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .browser-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
+    .browser-bar .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .browser-bar .r { background: #ff5f57; } .browser-bar .y { background: #febc2e; } .browser-bar .g { background: #28c840; }
+    .browser-bar .url { margin-left: 8px; font-size: 11px; color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 12px; flex: 1; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hero-visual .browser-shot { overflow: hidden; }
+    .hero-visual .browser-shot img { width: 100%; height: auto; display: block; object-fit: fill; }
+    .browser-shot.autoscroll { --shot-h: 400px; height: var(--shot-h); overflow: hidden; }
+    .browser-shot.autoscroll img { transform: translateY(0); transition: transform 5.5s ease-in-out; will-change: transform; }
+    .phone { flex: none; position: relative; width: 220px; aspect-ratio: 685 / 1433; }
+    .hero-visual .phone img { position: absolute; top: 1.54%; left: 4.53%; width: 90.95%; height: 97%; object-fit: cover; object-position: top; border-radius: 11% / 5%; z-index: 1; display: block; }
+    .phone::after { content: ""; position: absolute; inset: 0; background: url("mockup/iphone17-frame.webp") center / 100% 100% no-repeat; z-index: 2; pointer-events: none; }
+    .hero-phone { position: absolute; right: -22px; bottom: -28px; width: 156px; z-index: 3; filter: drop-shadow(0 10px 14px rgba(0,0,0,0.16)); }
+    .phone.autoscroll img { transition: object-position 5.5s ease-in-out; will-change: object-position; }
+    .browser-shot.autoscroll:hover img { transform: translateY(calc(-100% + var(--shot-h))); }
+    .phone.autoscroll:hover img { object-position: bottom; }
+    /* focus one device on hover: hovered grows & comes forward, the other tucks behind */
+    .hero-browser { position: relative; }
+    .hero-browser, .hero-phone { transition: transform 0.35s ease; }
+    .hero-devices:has(.hero-browser:hover) .hero-browser { transform: scale(1.02); z-index: 4; }
+    .hero-devices:has(.hero-phone:hover) .hero-phone { transform: scale(1.05); }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-browser, .hero-phone { transition: none; }
+      .hero-devices:has(.hero-browser:hover) .hero-browser,
+      .hero-devices:has(.hero-phone:hover) .hero-phone { transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .browser-shot.autoscroll img, .phone.autoscroll img { transition: none; }
+      .browser-shot.autoscroll:hover img { transform: translateY(0); }
+      .phone.autoscroll:hover img { object-position: top; }
+    }
+    @media (max-width: 900px) {
+      .hero-visual { padding: 40px 24px 48px; }
+      .hero-devices { max-width: 440px; }
+      .hero-phone { right: -6px; bottom: -14px; width: 118px; }
+      .browser-shot.autoscroll { --shot-h: 320px; }
+    }
+
+    /* ==== Results / Flow / Challenges / Retrospective ==== */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 30px; }
+    .stat { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 22px 18px; }
+    .stat .num { font-size: clamp(24px, 3.2vw, 36px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--accent-2, var(--neon)); }
+    .stat .lab { margin-top: 8px; font-size: 13px; color: var(--muted); word-break: keep-all; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 30px; }
+    .flow .node { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 9px 15px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+    .flow .node.br { border-style: dashed; color: var(--muted); }
+    .flow .arr { color: var(--muted); font-weight: 800; }
+    .chall { display: grid; gap: 12px; margin-top: 30px; max-width: 900px; }
+    .chall-item { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 20px 24px; }
+    .chall-item .q { margin: 0 0 8px; font-size: 15.5px; font-weight: 800; }
+    .chall-item .q b { color: var(--accent-2, var(--neon)); font-size: 11px; font-weight: 800; letter-spacing: 0.08em; margin-right: 8px; }
+    .chall-item .a { margin: 0; font-size: 14.5px; color: var(--muted); word-break: keep-all; }
+    .chall-item .a b { color: var(--accent-2, var(--neon)); }
+    .retro { margin-top: 28px; border-left: 3px solid var(--accent, var(--neon)); padding: 6px 0 6px 18px; max-width: 780px; }
+    .retro p { margin: 0; font-size: 15px; color: var(--muted); word-break: keep-all; }
+    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+    /* Flow storyboard (2x2) */
+    .flow-board { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 56px; margin-top: 30px; }
+    .flow-step { position: relative; }
+    .flow-step figure { margin: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
+    .flow-step img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; display: block; transition: object-position 7s ease-in-out; will-change: object-position; }
+    .flow-step:hover img { object-position: bottom; }
+    @media (prefers-reduced-motion: reduce) { .flow-step img { transition: none; } .flow-step:hover img { object-position: top; } }
+    .flow-step figcaption { padding: 11px 14px; }
+    .flow-step .n { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: var(--accent-2, var(--neon)); margin-bottom: 3px; }
+    .flow-step .nm { font-size: 15px; font-weight: 700; }
+    @media (max-width: 640px) { .flow-board { grid-template-columns: 1fr; max-width: 400px; } }
+    .flow-step .ds { display: block; margin-top: 5px; font-size: 12.5px; color: var(--muted); word-break: keep-all; line-height: 1.5; font-weight: 400; }
+
+    /* Problem / Goal */
+    .pg { display: grid; gap: 12px; margin-top: 30px; max-width: 940px; }
+    .pg-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; }
+    .pg-cell { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; color: #5a4a42; word-break: keep-all; }
+    .pg-cell.g { color: var(--accent-2); font-weight: 700; border-color: #f0d6cc; }
+    .pg-tag { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; }
+    .pg-cell.p .pg-tag { color: var(--muted); } .pg-cell.g .pg-tag { color: var(--accent-2); }
+    .pg-arrow { display: flex; align-items: center; justify-content: center; color: var(--muted); font-weight: 800; }
+    @media (max-width: 640px) { .pg-row { grid-template-columns: 1fr; } .pg-arrow { display: none; } }
+
+    /* Design Guide */
+    .guide { margin-top: 30px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .guide-row { display: grid; grid-template-columns: 190px 1fr; gap: 28px; padding: 26px; background: var(--panel); border-top: 1px solid var(--line); }
+    .guide-row:first-child { border-top: 0; }
+    .g-label { font-size: 15px; font-weight: 800; color: var(--accent-2); }
+    .g-label small { display: block; margin-top: 5px; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .g-body p { margin: 0; font-size: 14.5px; color: #5a4a42; word-break: keep-all; line-height: 1.7; }
+    .g-body .dd-kw, .g-body .swatches, .g-body .type-demo, .g-body .comp-demo { margin-top: 16px; }
+    .dd-kw { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dd-kw span { border: 1px solid var(--line); border-radius: 999px; padding: 7px 15px; font-size: 12px; font-weight: 700; color: var(--accent-2); background: var(--panel); }
+    .swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+    .sw { text-align: center; } .sw i { display: block; width: 62px; height: 62px; border-radius: 12px; border: 1px solid rgba(74,59,52,0.12); }
+    .sw span { display: block; margin-top: 8px; font-size: 10.5px; color: var(--muted); font-weight: 700; }
+    .type-demo { display: flex; flex-direction: column; gap: 4px; }
+    .type-demo .t-logo { font-size: 30px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.05; }
+    .type-demo .t-body { font-size: 14px; color: var(--muted); }
+    .comp-demo { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .demo-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; border-radius: 999px; padding: 10px 18px; font-size: 13px; font-weight: 800; }
+    .demo-tag { border: 1px solid var(--line); background: var(--bg); color: var(--accent-2); border-radius: 6px; padding: 5px 11px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; }
+    .demo-card { border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 13px 20px; font-size: 13px; font-weight: 700; color: var(--muted); }
+    @media (max-width: 720px) { .guide-row { grid-template-columns: 1fr; gap: 14px; padding: 22px 20px; } }
+
+    /* Retrospective 3-split */
+    .retro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
+    .retro-card { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 20px 22px; }
+    .retro-card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 800; color: var(--accent-2); }
+    .retro-card p { margin: 0; font-size: 14px; color: var(--muted); word-break: keep-all; line-height: 1.65; }
+    @media (max-width: 780px) { .retro-grid { grid-template-columns: 1fr; } }
+
+    /* Detail Index (sticky side nav) */
+    .detail-layout { display: grid; grid-template-columns: 248px 1fr; border-bottom: 1px solid var(--line); padding-inline: var(--gutter); }
+    .side-index { position: sticky; top: 72px; align-self: start; height: calc(100vh - 72px); padding: 46px 30px; border-right: 1px solid var(--line); overflow-y: auto; }
+    .side-index h2 { margin: 0 0 24px; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink); }
+    .side-index a { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px; font-weight: 600; transition: color 0.15s ease; }
+    .side-index a:hover { color: var(--accent-2); }
+    .side-index a span { font-weight: 800; color: var(--accent-2); }
+    .side-index a em { font-style: normal; }
+    .content .section:last-child { border-bottom: 0; }
+    @media (max-width: 900px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .side-index { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; overflow: visible; }
+      .side-index h2 { width: 100%; margin: 0 0 4px; }
+      .side-index a { border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; gap: 6px; font-size: 12px; }
+    }
+
+    /* Scroll to top — 스크롤 중 언제든 맨 위로 */
+    .to-top {
+      position: fixed; right: 24px; bottom: 24px; z-index: 50;
+      width: 46px; height: 46px; display: grid; place-items: center;
+      border: 0; cursor: pointer; border-radius: 50%;
+      background: var(--accent-2); color: #fff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      opacity: 0; visibility: hidden; transform: translateY(8px);
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    }
+    .to-top svg { display: block; }
+    .to-top.show { opacity: 1; visibility: visible; transform: none; }
+    .to-top:hover { transform: translateY(-2px); }
+    @media (prefers-reduced-motion: reduce) {
+      .to-top { transition: opacity 0.25s ease, visibility 0.25s; }
+      .to-top:hover { transform: none; }
+    }
+    @media (max-width: 900px) {
+      .to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
+    }
+
+    /* ── Korean typography pass ──
+       1.6 reads tight for Hangul: with no ascenders or descenders, a line of
+       Korean looks denser than the same value does in Latin, so body copy opens
+       up to 1.75. p.lead drops to 700px because 760px ran 47-48 Korean
+       characters per line, past the comfortable 35-45.
+       text-wrap: pretty stops a lone word stranding on the last line; balance
+       evens out heading line lengths. Browsers without text-wrap ignore it and
+       render exactly as before. Display headings keep their tight leading —
+       Hangul has no descenders, so it does not collide. */
+    .desc, p.lead, .build-card p, .section-body p, .concept-card p,
+    .retro-card p, .chall p, .facts li, .flow-step .ds, .project-desc {
+      line-height: var(--body-lh);
+      text-wrap: pretty;
+    }
+    /* Size applies to running body copy only — card text (14.5px) and captions
+       keep their own smaller scale, which --body-size must not flatten. */
+    .desc { font-size: var(--body-size); }
+    /* matches .section p.lead's specificity (0-2-1) so these actually win */
+    .section p.lead { max-width: var(--body-measure); font-size: var(--body-size); }
+    .title, .project-title, .project-subtitle, .subtitle,
+    .section h2, .section-body h3, .info-title, .cta-band h2 {
+      text-wrap: balance;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="nav">
+      <a class="back" href="index.html#work"><span>←</span><span>JO HYEON CHAE PORTFOLIO</span></a>
+      <nav class="nav-links"><a href="https://jhc2265.github.io/sagaksagak/" target="_blank" rel="noopener">LIVE ↗</a></nav>
+    </header>
+    <section class="hero" id="top">
+      <img class="deco" src="web/sagaksagak/deco/star.png"   alt="" style="width:40px; top:14px;     left:calc(var(--gutter) + 40px);   --r:-12deg; --d:2px; --s:4deg;  --t:7.4s; animation-delay:0s;">
+      <img class="deco" src="web/sagaksagak/deco/clip.png"   alt="" style="width:28px; bottom:12px;  left:calc(var(--gutter) + 100px);  --r:16deg;  --d:2px; --s:5deg;  --t:6.2s; animation-delay:1.9s;">
+      <img class="deco" src="web/sagaksagak/deco/flower.png" alt="" style="width:34px; top:92px;     left:calc(var(--gutter) + 610px);  --r:9deg;   --d:3px; --s:3deg;  --t:8.1s; animation-delay:.7s;  opacity:.42;">
+      <img class="deco" src="web/sagaksagak/deco/star.png"   alt="" style="width:30px; bottom:122px; left:calc(var(--gutter) + 645px);  --r:20deg;  --d:3px; --s:6deg;  --t:5.6s; animation-delay:2.4s; opacity:.46;">
+      <img class="deco" src="web/sagaksagak/deco/flower.png" alt="" style="width:46px; top:38px;     left:calc(var(--gutter) + 858px);  --r:-14deg; --d:4px; --s:2.5deg; --t:9.0s; animation-delay:1.2s;">
+      <img class="deco" src="web/sagaksagak/deco/clip.png"   alt="" style="width:26px; top:52px;     left:calc(var(--gutter) + 1150px); --r:-8deg;  --d:3px; --s:5.5deg; --t:6.8s; animation-delay:3.1s; opacity:.44;">
+      <img class="deco" src="web/sagaksagak/deco/star.png"   alt="" style="width:36px; bottom:58px;  left:calc(var(--gutter) + 1298px); --r:12deg;  --d:4px; --s:3.5deg; --t:7.9s; animation-delay:.3s;">
+      <img class="deco" src="web/sagaksagak/deco/flower.png" alt="" style="width:30px; top:296px;    left:calc(var(--gutter) + 1402px); --r:22deg;  --d:2px; --s:4.5deg; --t:6.5s; animation-delay:1.6s; opacity:.4;">
+      <div class="hero-text">
+        <p class="eyebrow">Web Design · 개인 프로젝트</p>
+        <h1 class="title">사각사각<br>문구점</h1>
+        <p class="subtitle">감성 문구 브랜드</p>
+        <p class="desc">아기자기한 문구를 만나는 감성 문구 브랜드 이커머스. 파스텔 일러스트 무드의 아트디렉션과 함께 <b>브랜드·제품·구매까지 26개 화면의 흐름을 직접 설계</b>하고 반응형으로 완성했습니다.</p>
+        <div class="hero-cta"><a class="btn solid" href="https://jhc2265.github.io/sagaksagak/" target="_blank" rel="noopener">View Live Site ↗</a></div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-devices">
+          <div class="browser hero-browser">
+            <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">jhc2265.github.io/sagaksagak</span></div>
+            <div class="browser-shot autoscroll"><img src="web/sagaksagak/pc.webp" alt="사각사각문구점 데스크톱 화면"></div>
+          </div>
+          <div class="phone hero-phone autoscroll"><img src="web/sagaksagak/mobile.webp" alt="사각사각문구점 모바일 화면"></div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <p class="kicker">Project Info</p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Category</span><span class="meta-value">Web Design · E-commerce</span></div>
+        <div class="meta-item"><span class="meta-label">My Role</span><span class="meta-value">기획 · UI 디자인 · 퍼블리싱 · 프론트엔드 개발</span></div>
+        <div class="meta-item"><span class="meta-label">Period</span><span class="meta-value">2026.06.21 – 06.24 (4일)</span></div>
+        <div class="meta-item"><span class="meta-label">Platform</span><span class="meta-value">PC · Mobile 반응형</span></div>
+        <div class="meta-item"><span class="meta-label">Contribution</span><span class="meta-value">개인 작업 100%</span></div>
+        <div class="meta-item"><span class="meta-label">Deployment</span><span class="meta-value">GitHub Pages</span></div>
+        <div class="meta-item" style="grid-column: 1 / -1;"><span class="meta-label">Main Feature</span><div class="meta-tags"><span>상품 목록·상세</span><span>장바구니·찜</span><span>주문서</span><span>구매자 리뷰</span><span>마이페이지</span></div></div>
+        <div class="meta-item" style="grid-column: 1 / -1;"><span class="meta-label">Tools</span><div class="meta-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>localStorage</span><span>Swiper</span><span>Daum 우편번호 API</span></div></div>
+      </div>
+    </section>
+    <div class="detail-layout">
+      <aside class="side-index">
+        <h2>Detail Index</h2>
+        <a href="#overview"><span>01</span><em>Overview</em></a>
+        <a href="#problem"><span>02</span><em>Problem &amp; Goal</em></a>
+        <a href="#design"><span>03</span><em>Design Guide</em></a>
+        <a href="#screens"><span>04</span><em>Screens</em></a>
+        <a href="#build"><span>05</span><em>Build</em></a>
+        <a href="#challenges"><span>06</span><em>Challenges</em></a>
+        <a href="#results"><span>07</span><em>Results</em></a>
+        <a href="#retro"><span>—</span><em>Review</em></a>
+      </aside>
+      <div class="content">
+    <section class="section" id="overview">
+      <p class="kicker">Overview</p>
+      <h2>사각사각, 오늘의 작은 문구</h2>
+      <p class="lead">문구 브랜드의 <b>쇼핑 경험 전체</b>를 HTML·CSS·JavaScript로 구현했습니다. 베스트셀러·제품·상세·장바구니·주문·마이페이지까지 이어지는 흐름을 하나의 무드로 설계했습니다.</p>
+      <p class="lead">파스텔 수채 일러스트와 부드러운 톤으로 <b>아기자기하고 따뜻한 브랜드 감성</b>을 살렸습니다.</p>
+    </section>
+    <section class="section" id="problem">
+      <p class="kicker">Problem &amp; Goal</p>
+      <h2>왜 이렇게 만들었나</h2>
+      <p class="lead">단순한 상품 나열이 아니라, <b>브랜드 감성과 구매 흐름을 함께 고려</b>한 문구 쇼핑몰을 목표로 방향을 먼저 정리했습니다.</p>
+      <div class="pg">
+        <div class="pg-row">
+          <div class="pg-cell p"><span class="pg-tag">Problem</span>문구 종류가 많아 그냥 나열하면 화면이 산만해 보이기 쉽다.</div>
+          <div class="pg-arrow">→</div>
+          <div class="pg-cell g"><span class="pg-tag">Goal</span>파스텔 일러스트 무드로 아기자기하게 정리해 탐색을 편안하게.</div>
+        </div>
+        <div class="pg-row">
+          <div class="pg-cell p"><span class="pg-tag">Problem</span>백엔드 없이 로그인·장바구니·찜 상태를 유지해야 한다.</div>
+          <div class="pg-arrow">→</div>
+          <div class="pg-cell g"><span class="pg-tag">Goal</span>localStorage에 상태를 구조화해 26개 페이지에서 동일하게 공유.</div>
+        </div>
+        <div class="pg-row">
+          <div class="pg-cell p"><span class="pg-tag">Problem</span>고해상도 일러스트 때문에 첫 로딩이 무거워진다.</div>
+          <div class="pg-arrow">→</div>
+          <div class="pg-cell g"><span class="pg-tag">Goal</span>전체 이미지를 WebP로 변환해 92% 경량화(93MB→7.5MB)한다.</div>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="design">
+      <p class="kicker">Design Guide</p>
+      <h2>디자인 가이드</h2>
+      <p class="lead">아기자기하고 따뜻한 문구 브랜드 무드를 일관되게 전달하기 위해 키워드부터 컬러·타이포·컴포넌트까지 규칙을 정의해 전 페이지에 반복 적용했습니다.</p>
+      <div class="guide">
+        <div class="guide-row">
+          <div class="g-label">브랜드 키워드<small>Brand Keyword</small></div>
+          <div class="g-body">
+            <p>부드럽고 다정한 문구 감성을 담기 위해 <b>soft · pastel · cozy</b>를 중심 키워드로 잡고 모든 화면의 톤 기준으로 삼았습니다.</p>
+            <div class="dd-kw"><span>soft</span><span>pastel</span><span>cozy</span><span>stationery</span></div>
+          </div>
+        </div>
+        <div class="guide-row">
+          <div class="g-label">Color<small>Color Palette</small></div>
+          <div class="g-body">
+            <p>크림 베이스에 살구·코랄 포인트를 더해 포근하고 다정한 무드를 구성했습니다. 파스텔 톤으로 제품 일러스트가 부드럽게 어우러지도록 했습니다.</p>
+            <div class="swatches">
+              <div class="sw"><i style="background:#fdf6f0"></i><span>Cream<br>#FDF6F0</span></div>
+              <div class="sw"><i style="background:#fffaf6"></i><span>Panel<br>#FFFAF6</span></div>
+              <div class="sw"><i style="background:#e8927c"></i><span>Coral<br>#E8927C</span></div>
+              <div class="sw"><i style="background:#cf6b52"></i><span>Deep<br>#CF6B52</span></div>
+              <div class="sw"><i style="background:#4a3b34"></i><span>Ink<br>#4A3B34</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="guide-row">
+          <div class="g-label">Typography<small>Type System</small></div>
+          <div class="g-body">
+            <p>또렷한 타이틀과 읽기 쉬운 본문을 조합해, <b>브랜드명은 다정하게 · 상품 정보는 명확하게</b> 보이도록 구성했습니다.</p>
+            <div class="type-demo">
+              <span class="t-logo">사각사각문구점</span>
+              <span class="t-body">오늘의 작은 문구 — 본문용 산세리프 (Pretendard · Inter)</span>
+            </div>
+          </div>
+        </div>
+        <div class="guide-row">
+          <div class="g-label">Component<small>UI Component</small></div>
+          <div class="g-body">
+            <p>둥근 카드, 코랄 CTA 버튼, 파스텔 태그를 반복 사용해 쇼핑몰 전체의 <b>아기자기한 통일감</b>을 유지했습니다.</p>
+            <div class="comp-demo">
+              <span class="demo-btn">장바구니 담기 →</span>
+              <span class="demo-tag">BEST</span>
+              <span class="demo-card">상품 카드</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section" id="screens">
+      <p class="kicker">Screens &amp; Flow</p>
+      <h2>화면 구성 · 흐름</h2>
+      <p class="lead">메인 내비게이션 5개 탭 및 상품 상세·장바구니·주문·마이페이지까지 <b>총 26개 화면</b>을 설계·제작했습니다. 아래는 핵심 화면 흐름입니다.</p>
+      <div class="flow-board">
+        <div class="flow-step"><figure><img src="web/sagaksagak/full-home.webp" alt="메인 화면" loading="lazy"><figcaption><span class="n">STEP 01</span><span class="nm">메인</span><span class="ds">브랜드 무드와 베스트셀러로 첫인상을 잡고 카테고리로 안내.</span></figcaption></figure></div>
+        <div class="flow-step"><figure><img src="web/sagaksagak/full-products.webp" alt="상품 목록 화면" loading="lazy"><figcaption><span class="n">STEP 02</span><span class="nm">상품 목록</span><span class="ds">카테고리·정렬로 원하는 문구를 찾고 상세로 이동.</span></figcaption></figure></div>
+        <div class="flow-step"><figure><img src="web/sagaksagak/full-checkout.webp" alt="주문서 화면" loading="lazy"><figcaption><span class="n">STEP 03</span><span class="nm">주문서</span><span class="ds">배송지·결제 정보 입력과 최종 금액 확인까지 이어지는 주문 흐름.</span></figcaption></figure></div>
+        <div class="flow-step"><figure><img src="web/sagaksagak/full-mypage.webp" alt="마이페이지 화면" loading="lazy"><figcaption><span class="n">STEP 04</span><span class="nm">마이페이지</span><span class="ds">주문 내역·찜·리뷰를 한곳에서 관리하는 개인 공간.</span></figcaption></figure></div>
+      </div>
+    </section>
+    <section class="section" id="build">
+      <p class="kicker">Build</p>
+      <h2>구현 포인트</h2>
+      <div class="build">
+        <div class="build-card"><h3>다중 페이지 이커머스</h3><p>베스트셀러·제품·상세·장바구니·주문·마이페이지까지 26개 화면을 하나의 흐름으로 연결.</p></div>
+        <div class="build-card"><h3>localStorage 상태 관리</h3><p>사용자·장바구니·찜 상태를 구조화해 저장하고, 페이지를 이동해도 동일하게 유지되도록 구현.</p></div>
+        <div class="build-card"><h3>구매자 리뷰 권한</h3><p>주문 내역과 상품 ID를 매칭해 실제 구매 고객만 리뷰를 작성할 수 있도록 판별.</p></div>
+        <div class="build-card"><h3>Swiper &amp; 반응형</h3><p>Swiper 슬라이더와 반응형 그리드로 PC·모바일 모두 부드러운 상품 탐색을 구현.</p></div>
+      </div>
+      <div class="chips"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>반응형</span><span>E-commerce</span><span>GitHub Pages</span></div>
+    </section>
+    <section class="section" id="challenges">
+      <p class="kicker">Challenges</p>
+      <h2>막혔던 부분 &middot; 해결</h2>
+      <div class="chall">
+        <div class="chall-item"><p class="q"><b>PROBLEM</b>백엔드 없이 로그인&middot;장바구니&middot;찜을 어떻게 유지할까?</p><p class="a"><b>해결 &rarr;</b> localStorage에 사용자&middot;장바구니&middot;찜 상태를 구조화해 저장하고, 26개 페이지 어디서나 동일하게 불러오도록 설계했습니다.</p></div>
+        <div class="chall-item"><p class="q"><b>PROBLEM</b>구매하지 않은 사람이 리뷰를 쓰면 안 된다.</p><p class="a"><b>해결 &rarr;</b> 주문 내역과 상품 ID를 매칭해 &lsquo;구매 고객&rsquo;만 리뷰를 작성할 수 있도록 권한을 판별했습니다.</p></div>
+        <div class="chall-item"><p class="q"><b>PROBLEM</b>고해상도 일러스트 때문에 첫 로딩이 무겁다.</p><p class="a"><b>해결 &rarr;</b> 전체 이미지를 WebP로 변환해 93MB&rarr;7.5MB(92%&darr;)로 줄여, 반응형에서도 빠르게 로딩되도록 했습니다.</p></div>
+      </div>
+    </section>
+    <section class="section" id="results">
+      <p class="kicker">Results</p>
+      <h2>숫자로 보는 작업</h2>
+      <div class="stats">
+        <div class="stat"><div class="num">26</div><div class="lab">직접 설계한 화면</div></div>
+        <div class="stat"><div class="num">1인</div><div class="lab">기획 · 디자인 · 개발 전 과정</div></div>
+        <div class="stat"><div class="num">92%</div><div class="lab">이미지 경량화 (93MB→7.5MB)</div></div>
+        <div class="stat"><div class="num">100%</div><div class="lab">순수 JavaScript · 프레임워크 없이</div></div>
+      </div>
+    </section>
+    <section class="section" id="retro">
+      <p class="kicker">Review</p>
+      <h2>돌아보며</h2>
+      <p class="lead">localStorage만으로 상태를 관리하며 &lsquo;데이터가 화면 사이를 어떻게 흐르는가&rsquo;를 직접 설계한 프로젝트였습니다. 과정을 배운 점·아쉬운 점·개선 방향으로 정리했습니다.</p>
+      <div class="retro-grid">
+        <div class="retro-card"><h3>배운 점</h3><p>백엔드 없이도 상태를 구조화해 26개 페이지에서 공유하며, 데이터 흐름을 직접 설계하는 감각을 익혔습니다.</p></div>
+        <div class="retro-card"><h3>아쉬운 점</h3><p>localStorage 기반이라 기기 간 동기화나 실제 결제·인증까지는 확장하지 못한 점이 아쉽습니다.</p></div>
+        <div class="retro-card"><h3>개선 방향</h3><p>다음엔 실제 백엔드(Supabase 등)와 연동해 인증·주문을 서버로 확장해보고 싶습니다.</p></div>
+      </div>
+    </section>
+      </div>
+    </div>
+    <section class="cta-band">
+      <h2>실제 사이트에서 <span>사각사각문구점</span>을 둘러보세요.</h2>
+      <a class="btn solid" href="https://jhc2265.github.io/sagaksagak/" target="_blank" rel="noopener">View Live Site ↗</a>
+    </section>
+    <footer class="bottom-nav">
+      <a href="index.html#work"><span>Back to Portfolio</span><span>←</span></a>
+      <a class="next" href="project-enoughday.html">
+        <span class="next-label"><em>Next Project</em><strong>enoughday</strong></span>
+        <span>→</span>
+      </a>
+    </footer>
+  </main>
+  <script>
+  /* Detail Index scroll-spy — 현재 섹션 목차 항목을 강조색으로 하이라이트 */
+  (function () {
+    var idx = document.querySelector('.side-index');
+    if (!idx) return;
+    var links = [].slice.call(idx.querySelectorAll('a[href^="#"]'));
+    if (!links.length) return;
+    var probe = idx.querySelector('a span');
+    var accent = probe ? getComputedStyle(probe).color : '';
+    var byId = {}, sections = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (el) { byId[el.id] = a; sections.push(el); }
+    });
+    if (!sections.length) return;
+    var current = null;
+    function paint(a, on) {
+      var lbl = a.querySelector('em') || a;
+      a.style.fontWeight = on ? '700' : '';
+      if (accent) lbl.style.color = on ? accent : '';
+      a.classList.toggle('active', on);
+    }
+    function setActive(a) {
+      if (current === a) return;
+      if (current) paint(current, false);
+      paint(a, true);
+      current = a;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      var vis = entries.filter(function (e) { return e.isIntersecting; });
+      if (!vis.length) return;
+      vis.sort(function (x, y) { return x.boundingClientRect.top - y.boundingClientRect.top; });
+      var a = byId[vis[0].target.id];
+      if (a) setActive(a);
+    }, { rootMargin: '-30% 0px -45% 0px', threshold: 0 });
+    sections.forEach(function (s) { io.observe(s); });
+  })();
+  </script>
+  <button class="to-top" type="button" aria-label="맨 위로">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+  <script>
+  /* Scroll to top — 조금 내려가면 나타나고, 누르면 맨 위로 */
+  (function () {
+    var btn = document.querySelector('.to-top');
+    if (!btn) return;
+    function sync() { btn.classList.toggle('show', window.scrollY > 500); }
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+    btn.addEventListener('click', function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  })();
+  </script>
+  <!-- Typography tuner — only runs when the URL carries ?tune, so visitors
+       never load it. Writes --body-lh / --body-size / --body-measure live and
+       hands back the :root block to paste into the stylesheet. -->
+  <script>
+  (function () {
+    if (!/(^|[?&])tune\b/.test(location.search)) return;
+
+    var FIELDS = [
+      { key: '--body-lh',      label: '본문 행간', min: 1.4,  max: 2.1, step: 0.01, unit: '' },
+      { key: '--body-size',    label: '본문 크기', min: 14,   max: 20,  step: 0.5,  unit: 'px' },
+      { key: '--body-measure', label: '본문 폭',   min: 520,  max: 900, step: 10,   unit: 'px' }
+    ];
+    var STORE = 'tune:' + location.pathname;
+    var root = document.documentElement;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) {}
+
+    // Defaults come from the stylesheet, so the panel always starts at the
+    // page's real values rather than a duplicated guess.
+    var css = getComputedStyle(root);
+    FIELDS.forEach(function (f) {
+      f.initial = parseFloat(css.getPropertyValue(f.key));
+      f.value = saved[f.key] != null ? saved[f.key] : f.initial;
+    });
+
+    var box = document.createElement('div');
+    box.dir = 'ltr';
+    box.style.cssText = [
+      'position:fixed', 'right:18px', 'bottom:18px', 'z-index:99999',
+      'width:260px', 'padding:16px 18px 14px', 'border-radius:12px',
+      'background:rgba(20,22,28,0.94)', 'color:#fff',
+      'font:500 12px/1.5 ui-sans-serif,system-ui,sans-serif',
+      'box-shadow:0 12px 34px rgba(0,0,0,0.34)', 'backdrop-filter:blur(8px)'
+    ].join(';');
+
+    var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+               '<b style="font-size:12px;letter-spacing:0.08em">TYPOGRAPHY</b>' +
+               '<button data-act="close" style="all:unset;cursor:pointer;opacity:0.55;padding:2px 4px">✕</button></div>';
+    FIELDS.forEach(function (f, i) {
+      html += '<label style="display:block;margin-bottom:11px">' +
+              '<span style="display:flex;justify-content:space-between;margin-bottom:4px">' +
+              '<span style="opacity:0.7">' + f.label + '</span>' +
+              '<output data-out="' + i + '" style="font-variant-numeric:tabular-nums"></output></span>' +
+              '<input type="range" data-idx="' + i + '" min="' + f.min + '" max="' + f.max +
+              '" step="' + f.step + '" value="' + f.value + '" style="width:100%;accent-color:#7aa7ff"></label>';
+    });
+    html += '<div style="display:flex;gap:6px;margin-top:4px">' +
+            '<button data-act="copy" style="flex:1;all:unset;cursor:pointer;text-align:center;padding:7px 0;border-radius:7px;background:#3b6df0">CSS 복사</button>' +
+            '<button data-act="reset" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:7px;background:rgba(255,255,255,0.14)">되돌리기</button></div>' +
+            '<div data-note style="margin-top:8px;min-height:14px;opacity:0.6;font-size:11px"></div>';
+    box.innerHTML = html;
+    document.body.appendChild(box);
+
+    var note = box.querySelector('[data-note]');
+    function apply(persist) {
+      FIELDS.forEach(function (f, i) {
+        root.style.setProperty(f.key, f.value + f.unit);
+        box.querySelector('[data-out="' + i + '"]').textContent = f.value + f.unit;
+      });
+      if (persist) {
+        var o = {};
+        FIELDS.forEach(function (f) { o[f.key] = f.value; });
+        try { localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) {}
+      }
+    }
+    apply(false);
+
+    box.addEventListener('input', function (e) {
+      var i = e.target.getAttribute('data-idx');
+      if (i === null) return;
+      FIELDS[i].value = parseFloat(e.target.value);
+      apply(true);
+      note.textContent = '';
+    });
+
+    box.addEventListener('click', function (e) {
+      var act = e.target.getAttribute('data-act');
+      if (act === 'close') { box.remove(); return; }
+      if (act === 'reset') {
+        FIELDS.forEach(function (f, i) {
+          f.value = f.initial;
+          box.querySelector('[data-idx="' + i + '"]').value = f.initial;
+        });
+        try { localStorage.removeItem(STORE); } catch (err) {}
+        apply(false);
+        note.textContent = '스타일시트 값으로 되돌렸습니다';
+        return;
+      }
+      if (act === 'copy') {
+        var text = FIELDS.map(function (f) {
+          return '  ' + f.key + ': ' + f.value + f.unit + ';';
+        }).join('\n');
+        navigator.clipboard.writeText(text).then(function () {
+          note.textContent = '복사됨 — :root에 붙여넣으세요';
+        }, function () {
+          note.textContent = text;
+        });
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# 원본 아카이브 — 로컬 보관용, 사이트 구동에는 불필요
+_source/

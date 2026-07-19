@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyberpunk 2077 — Web Design | JO HYEON CHAE</title>
+  <style>
+    :root {
+      --bg: #05060a;
+      --panel: #0c0e16;
+      --line: #1c2130;
+      --text: #e9eaf0;
+      --muted: #8a8fa6;
+      --neon: #fcee0a;
+      --cyan: #29e7ff;
+      --magenta: #ff2e97;
+      font-family: Inter, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+
+      /* Body typography — the ?tune panel writes these three at runtime.
+         Every body-copy rule reads them, so a change here is the only edit
+         needed; nothing else hard-codes a size, leading or measure. */
+      --body-lh: 1.85;
+      --body-size: 16px;
+      --body-measure: 900px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    /* The page fills the viewport so backgrounds, rules and the nav reach both
+       edges. Each top-level section adds --gutter to its own inline padding,
+       which keeps the content itself on a centred 1440px grid. Below 1440px the
+       gutter is 0, so narrow screens behave exactly as before. */
+    .page { --gutter: max(0px, (100% - 1440px) / 2); width: 100%; background: var(--bg); }
+
+    .nav {
+      position: sticky; top: 0; z-index: 10; height: 72px; padding: 0 calc(48px + var(--gutter));
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 6, 10, 0.85); backdrop-filter: blur(12px);
+      letter-spacing: 0.12em; font-size: 13px; font-weight: 700;
+    }
+    .nav .back { display: flex; align-items: center; gap: 10px; }
+    .nav .back:hover { color: var(--neon); }
+    .nav-links { display: flex; gap: 22px; align-items: center; color: var(--muted); }
+    .nav-links a:hover { color: var(--neon); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px;
+      font-size: 14px; font-weight: 800; letter-spacing: 0.04em;
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    @property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+    @keyframes btn-neon-spin { to { --a: 360deg; } }
+    .btn.neon { position: relative; z-index: 0; background: transparent; color: #fff; text-shadow: 0 0 6px rgba(255,255,255,0.28); filter: drop-shadow(0 0 7px rgba(41,231,255,0.3)) drop-shadow(0 0 7px rgba(252,238,10,0.22)); transition: transform 0.15s ease, filter 0.25s ease; }
+    .btn.neon::before {
+      content: ""; position: absolute; inset: 0; z-index: -2;
+      background: conic-gradient(from var(--a), var(--cyan) 0deg, var(--neon) 100deg, var(--cyan) 200deg, var(--neon) 300deg, var(--cyan) 360deg);
+      animation: btn-neon-spin 4.5s linear infinite;
+    }
+    .btn.neon::after { content: ""; position: absolute; inset: 1.5px; z-index: -1; background: rgba(6,8,14,0.9); }
+    .btn.neon:hover { transform: translateY(-2px); filter: drop-shadow(0 0 13px rgba(41,231,255,0.5)) drop-shadow(0 0 13px rgba(252,238,10,0.4)); }
+    @media (prefers-reduced-motion: reduce) { .btn.neon::before { animation: none; } }
+    .btn.ghost { border: 1px solid var(--line); color: var(--text); }
+    .btn.ghost:hover { border-color: var(--neon); color: var(--neon); }
+
+    /* Hero */
+    .hero {
+      padding-inline: var(--gutter);
+      display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 0;
+      border-bottom: 1px solid var(--line); min-height: calc(100vh - 72px);
+      background:
+        linear-gradient(90deg, rgba(5,6,10,0.96) 0%, rgba(5,6,10,0.82) 40%, rgba(5,6,10,0.5) 72%, rgba(5,6,10,0.42) 100%),
+        url("web/cyberpunk/hero-night-city.webp") center / cover no-repeat;
+    }
+    .hero-text { padding: 64px 72px; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
+    .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--neon); margin: 0; }
+    .title { margin: 6px 0 0; font-size: clamp(46px, 6.5vw, 104px); line-height: 0.92; letter-spacing: -0.03em; font-weight: 900; }
+    .title span { color: var(--neon); }
+    .subtitle { margin: 8px 0 0; font-size: 20px; font-weight: 700; color: var(--cyan); }
+    .desc { margin: 6px 0 0; max-width: 520px; color: var(--muted); font-size: 16px; word-break: keep-all; }
+    .hero-cta { margin-top: 14px; display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-visual { position: relative; overflow: hidden; background: #000; }
+    .hero-visual img { width: 100%; height: 100%; object-fit: cover; opacity: 0.96; }
+    .hero-visual::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 120px rgba(5,6,10,0.9); pointer-events: none; }
+
+    /* Section */
+    .section { padding: 72px 48px; border-bottom: 1px solid var(--line); }
+    /* direct children only: .section also appears nested inside .detail-layout,
+       which supplies the gutter itself */
+    .page > :where(.section) { padding-inline: calc(48px + var(--gutter)); }
+    .kicker { font-size: 12px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--neon); margin: 0 0 14px; }
+    .section h2 { margin: 0 0 18px; font-size: clamp(28px, 4vw, 46px); line-height: 1.05; letter-spacing: -0.03em; font-weight: 900; }
+    .section p.lead { max-width: 760px; margin: 0; color: #c7cad6; font-size: 16px; word-break: keep-all; }
+    .section p.lead + p.lead { margin-top: 12px; }
+    .section b { color: var(--neon); font-weight: 700; }
+
+    /* Screens grid */
+    .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 30px; }
+    .shot { position: relative; border: 1px solid var(--line); background: var(--panel); overflow: hidden; }
+    .shot img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 16/10; transition: transform 0.5s ease; }
+    .shot:hover img { transform: scale(1.04); }
+    .shot figcaption { position: absolute; left: 0; bottom: 0; padding: 8px 14px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; background: rgba(5,6,10,0.72); border-top: 1px solid var(--line); border-right: 1px solid var(--line); color: var(--cyan); }
+    .shot.wide { grid-column: 1 / -1; }
+    .shot.wide img { aspect-ratio: 24/7; }
+
+    /* Build points */
+    .build { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 30px; }
+    .build-card { border: 1px solid var(--line); background: var(--panel); padding: 24px; }
+    .build-card h3 { margin: 0 0 8px; font-size: 18px; color: var(--neon); }
+    .build-card p { margin: 0; color: var(--muted); font-size: 14.5px; word-break: keep-all; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+    .chips span { border: 1px solid var(--line); color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: 0.03em; padding: 7px 14px; }
+
+    .cta-band { padding: 64px calc(48px + var(--gutter)); text-align: center; border-bottom: 1px solid var(--line); }
+    .cta-band h2 { margin: 0 0 22px; font-size: clamp(26px, 4vw, 44px); font-weight: 900; letter-spacing: -0.03em; }
+    .cta-band h2 span { color: var(--neon); }
+
+    .bottom-nav { display: grid; grid-template-columns: 1fr 1fr; padding-inline: var(--gutter); }
+    .bottom-nav a { padding: 30px 48px; border-right: 1px solid var(--line); font-size: 16px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+    .bottom-nav a:last-child { border-right: 0; }
+    .bottom-nav a:hover { color: var(--neon); }
+    .bottom-nav .next-label { display: flex; flex-direction: column; gap: 5px; }
+    .bottom-nav .next-label em { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .bottom-nav .next-label strong { font-weight: 800; }
+
+    @media (max-width: 900px) {
+      .nav { padding: 0 20px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-text { border-right: 0; border-bottom: 1px solid var(--line); padding: 48px 24px; }
+      .hero-visual { min-height: 320px; }
+      .section, .cta-band { padding: 48px 24px; }
+      .shots, .build, .bottom-nav { grid-template-columns: 1fr; }
+    }
+    /* Project Info meta (팀 페이지와 구조 통일) */
+    .meta-row { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); margin-top: 26px; }
+    .meta-item { padding: 20px 0; border-bottom: 1px solid var(--line); }
+    .meta-item:nth-child(odd) { padding-right: 28px; }
+    .meta-label { display: block; margin-bottom: 10px; color: var(--muted); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
+    .meta-value { font-size: 16px; font-weight: 700; line-height: 1.6; word-break: keep-all; }
+    .meta-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .meta-tags span { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 700; color: var(--cyan); }
+    @media (max-width: 900px) { .meta-row { grid-template-columns: 1fr; } .meta-item:nth-child(odd) { padding-right: 0; } }
+
+    /* ==== Live device mockups (PC + phone, hover scroll) ==== */
+    .hero-visual { display: flex; align-items: center; justify-content: center; padding: 48px 44px; overflow: visible; background: transparent; }
+    .hero-visual::after { content: none !important; display: none !important; }
+    .hero-devices { position: relative; width: 100%; max-width: 640px; margin: 0 auto; }
+    .hero-browser { width: 100%; }
+    .browser { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .browser-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
+    .browser-bar .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .browser-bar .r { background: #ff5f57; } .browser-bar .y { background: #febc2e; } .browser-bar .g { background: #28c840; }
+    .browser-bar .url { margin-left: 8px; font-size: 11px; color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 3px 12px; flex: 1; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hero-visual .browser-shot { overflow: hidden; }
+    .hero-visual .browser-shot img { width: 100%; height: auto; display: block; object-fit: fill; }
+    .browser-shot.autoscroll { --shot-h: 400px; height: var(--shot-h); overflow: hidden; }
+    .browser-shot.autoscroll img { transform: translateY(0); transition: transform 5.5s ease-in-out; will-change: transform; }
+    .phone { flex: none; position: relative; width: 220px; aspect-ratio: 685 / 1433; }
+    .hero-visual .phone img { position: absolute; top: 1.54%; left: 4.53%; width: 90.95%; height: 97%; object-fit: cover; object-position: top; border-radius: 11% / 5%; z-index: 1; display: block; }
+    .phone::after { content: ""; position: absolute; inset: 0; background: url("mockup/iphone17-frame.webp") center / 100% 100% no-repeat; z-index: 2; pointer-events: none; }
+    .hero-phone { position: absolute; right: -22px; bottom: -28px; width: 156px; z-index: 3; filter: drop-shadow(0 10px 14px rgba(0,0,0,0.26)); }
+    .phone.autoscroll img { transition: object-position 5.5s ease-in-out; will-change: object-position; }
+    .browser-shot.autoscroll:hover img { transform: translateY(calc(-100% + var(--shot-h))); }
+    .phone.autoscroll:hover img { object-position: bottom; }
+    /* focus one device on hover: hovered grows & comes forward, the other tucks behind */
+    .hero-browser { position: relative; }
+    .hero-browser, .hero-phone { transition: transform 0.35s ease; }
+    .hero-devices:has(.hero-browser:hover) .hero-browser { transform: scale(1.02); z-index: 4; }
+    .hero-devices:has(.hero-phone:hover) .hero-phone { transform: scale(1.05); }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-browser, .hero-phone { transition: none; }
+      .hero-devices:has(.hero-browser:hover) .hero-browser,
+      .hero-devices:has(.hero-phone:hover) .hero-phone { transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .browser-shot.autoscroll img, .phone.autoscroll img { transition: none; }
+      .browser-shot.autoscroll:hover img { transform: translateY(0); }
+      .phone.autoscroll:hover img { object-position: top; }
+    }
+
+    /* ==== Hero Before / After toggle (공식 사이트 ↔ 리디자인) ==== */
+    .ba-switch { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .ba-seg { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); background: var(--panel); }
+    .ba-seg button { appearance: none; border: 0; cursor: pointer; padding: 7px 18px; background: transparent; color: var(--muted); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; transition: background 0.25s ease, color 0.25s ease; }
+    .ba-seg button:hover { color: var(--text); }
+    .ba-seg button[aria-pressed="true"] { background: var(--neon); color: #05060a; }
+    .ba-note { margin: 0; font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+
+    /* 두 시점의 스크린샷을 겹쳐두고 opacity로 전환 */
+    .hero-browser .browser-shot.autoscroll { position: relative; }
+    .hero-visual .browser-shot.autoscroll img,
+    .hero-visual .hero-phone img { transition: transform 5.5s ease-in-out, object-position 5.5s ease-in-out, opacity 0.45s ease; }
+    .hero-visual .browser-shot.autoscroll img { position: absolute; top: 0; left: 0; }
+    .hero-devices .ba-layer[data-when="before"] { opacity: 0; }
+    .hero-devices[data-state="before"] .ba-layer[data-when="after"] { opacity: 0; }
+    .hero-devices[data-state="before"] .ba-layer[data-when="before"] { opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-visual .browser-shot.autoscroll img, .hero-visual .hero-phone img { transition: opacity 0.45s ease; }
+    }
+
+    @media (max-width: 900px) {
+      .hero-visual { padding: 40px 24px 48px; }
+      .hero-devices { max-width: 440px; }
+      .hero-phone { right: -6px; bottom: -14px; width: 118px; }
+      .browser-shot.autoscroll { --shot-h: 320px; }
+    }
+
+    /* ==== Results / Flow / Challenges / Retrospective ==== */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 30px; }
+    .stat { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 22px 18px; }
+    .stat .num { font-size: clamp(24px, 3.2vw, 36px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--accent-2, var(--neon)); }
+    .stat .lab { margin-top: 8px; font-size: 13px; color: var(--muted); word-break: keep-all; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 30px; }
+    .flow .node { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 9px 15px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+    .flow .node.br { border-style: dashed; color: var(--muted); }
+    .flow .arr { color: var(--muted); font-weight: 800; }
+    .chall { display: grid; gap: 12px; margin-top: 30px; max-width: 900px; }
+    .chall-item { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 20px 24px; }
+    .chall-item .q { margin: 0 0 8px; font-size: 15.5px; font-weight: 800; }
+    .chall-item .q b { color: var(--accent-2, var(--neon)); font-size: 11px; font-weight: 800; letter-spacing: 0.08em; margin-right: 8px; }
+    .chall-item .a { margin: 0; font-size: 14.5px; color: var(--muted); word-break: keep-all; }
+    .chall-item .a b { color: var(--accent-2, var(--neon)); }
+    .retro { margin-top: 28px; border-left: 3px solid var(--accent, var(--neon)); padding: 6px 0 6px 18px; max-width: 780px; }
+    .retro p { margin: 0; font-size: 15px; color: var(--muted); word-break: keep-all; }
+    .retro p b { color: var(--accent-2, var(--neon)); }
+    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+    /* Flow storyboard (2x2) */
+    .flow-board { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 56px; margin-top: 30px; }
+    .flow-step { position: relative; }
+    .flow-step figure { margin: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
+    .flow-step img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+    .flow-step figcaption { padding: 11px 14px; }
+    .flow-step .n { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: var(--accent-2, var(--neon)); margin-bottom: 3px; }
+    .flow-step .nm { font-size: 15px; font-weight: 700; }
+    @media (max-width: 640px) { .flow-board { grid-template-columns: 1fr; max-width: 400px; } }
+    .flow-step .ds { display: block; margin-top: 5px; font-size: 12.5px; color: var(--muted); word-break: keep-all; line-height: 1.5; font-weight: 400; }
+
+    /* Problem / Goal */
+    .pg { display: grid; gap: 12px; margin-top: 30px; max-width: 940px; }
+    .pg-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; }
+    .pg-cell { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; color: #c7cad6; word-break: keep-all; }
+    .pg-cell.g { color: var(--text); border-color: #2a3550; }
+    .pg-tag { display: block; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; }
+    .pg-cell.p .pg-tag { color: var(--muted); } .pg-cell.g .pg-tag { color: var(--neon); }
+    .pg-arrow { display: flex; align-items: center; justify-content: center; color: var(--muted); font-weight: 800; }
+    @media (max-width: 640px) { .pg-row { grid-template-columns: 1fr; } .pg-arrow { display: none; } }
+
+    /* Design Guide */
+    .guide { margin-top: 30px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .guide-row { display: grid; grid-template-columns: 190px 1fr; gap: 28px; padding: 26px; background: var(--panel); border-top: 1px solid var(--line); }
+    .guide-row:first-child { border-top: 0; }
+    .g-label { font-size: 15px; font-weight: 800; color: var(--neon); }
+    .g-label small { display: block; margin-top: 5px; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .g-body p { margin: 0; font-size: 14.5px; color: #c7cad6; word-break: keep-all; line-height: 1.7; }
+    .g-body .dd-kw, .g-body .swatches, .g-body .type-demo, .g-body .comp-demo { margin-top: 16px; }
+    .dd-kw { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dd-kw span { border: 1px solid var(--line); border-radius: 999px; padding: 7px 15px; font-size: 12px; font-weight: 700; color: var(--cyan); background: var(--bg); }
+    .swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+    .sw { text-align: center; } .sw i { display: block; width: 62px; height: 62px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); }
+    .sw span { display: block; margin-top: 8px; font-size: 10.5px; color: var(--muted); font-weight: 700; }
+    .type-demo { display: flex; flex-direction: column; gap: 4px; }
+    .type-demo .t-logo { font-size: 30px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; color: var(--text); }
+    .type-demo .t-logo span { color: var(--neon); }
+    .type-demo .t-body { font-size: 14px; color: var(--muted); }
+    .comp-demo { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .demo-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--neon); color: #05060a; padding: 10px 18px; font-size: 13px; font-weight: 800; clip-path: polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px); }
+    .demo-tag { border: 1px solid var(--cyan); background: transparent; color: var(--cyan); padding: 5px 11px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; }
+    .demo-card { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 13px 20px; font-size: 13px; font-weight: 700; color: var(--muted); }
+    @media (max-width: 720px) { .guide-row { grid-template-columns: 1fr; gap: 14px; padding: 22px 20px; } }
+
+    /* Retrospective 3-split */
+    .retro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
+    .retro-card { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 20px 22px; }
+    .retro-card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 800; color: var(--neon); }
+    .retro-card p { margin: 0; font-size: 14px; color: var(--muted); word-break: keep-all; line-height: 1.65; }
+    @media (max-width: 780px) { .retro-grid { grid-template-columns: 1fr; } }
+
+    /* Detail Index (sticky side nav) */
+    .detail-layout { display: grid; grid-template-columns: 248px 1fr; border-bottom: 1px solid var(--line); padding-inline: var(--gutter); }
+    .side-index { position: sticky; top: 72px; align-self: start; height: calc(100vh - 72px); padding: 46px 30px; border-right: 1px solid var(--line); overflow-y: auto; }
+    .side-index h2 { margin: 0 0 24px; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); }
+    .side-index a { display: flex; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px; font-weight: 600; transition: color 0.15s ease; }
+    .side-index a:hover { color: var(--neon); }
+    .side-index a span { font-weight: 800; color: var(--neon); }
+    .side-index a em { font-style: normal; }
+    .content .section:last-child { border-bottom: 0; }
+    @media (max-width: 900px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .side-index { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; overflow: visible; }
+      .side-index h2 { width: 100%; margin: 0 0 4px; }
+      .side-index a { border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; gap: 6px; font-size: 12px; }
+    }
+
+    /* Scroll to top — 스크롤 중 언제든 맨 위로 */
+    .to-top {
+      position: fixed; right: 24px; bottom: 24px; z-index: 50;
+      width: 46px; height: 46px; display: grid; place-items: center;
+      border: 0; cursor: pointer; border-radius: 50%;
+      background: var(--neon); color: #05060a;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      opacity: 0; visibility: hidden; transform: translateY(8px);
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    }
+    .to-top svg { display: block; }
+    .to-top.show { opacity: 1; visibility: visible; transform: none; }
+    .to-top:hover { transform: translateY(-2px); }
+    @media (prefers-reduced-motion: reduce) {
+      .to-top { transition: opacity 0.25s ease, visibility 0.25s; }
+      .to-top:hover { transform: none; }
+    }
+    @media (max-width: 900px) {
+      .to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
+    }
+
+    /* ── Korean typography pass ──
+       1.6 reads tight for Hangul: with no ascenders or descenders, a line of
+       Korean looks denser than the same value does in Latin, so body copy opens
+       up to 1.75. p.lead drops to 700px because 760px ran 47-48 Korean
+       characters per line, past the comfortable 35-45.
+       text-wrap: pretty stops a lone word stranding on the last line; balance
+       evens out heading line lengths. Browsers without text-wrap ignore it and
+       render exactly as before. Display headings keep their tight leading —
+       Hangul has no descenders, so it does not collide. */
+    .desc, p.lead, .build-card p, .section-body p, .concept-card p,
+    .retro-card p, .chall p, .facts li, .flow-step .ds, .project-desc {
+      line-height: var(--body-lh);
+      text-wrap: pretty;
+    }
+    /* Size applies to running body copy only — card text (14.5px) and captions
+       keep their own smaller scale, which --body-size must not flatten. */
+    .desc { font-size: var(--body-size); }
+    /* matches .section p.lead's specificity (0-2-1) so these actually win */
+    .section p.lead { max-width: var(--body-measure); font-size: var(--body-size); }
+    .title, .project-title, .project-subtitle, .subtitle,
+    .section h2, .section-body h3, .info-title, .cta-band h2 {
+      text-wrap: balance;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="nav">
+      <a class="back" href="index.html#work"><span>←</span><span>JO HYEON CHAE PORTFOLIO</span></a>
+      <nav class="nav-links">
+        <a href="https://jhc2265.github.io/cyberpunk2077/" target="_blank" rel="noopener">LIVE ↗</a>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="top">
+      <div class="hero-text">
+        <p class="eyebrow">Web Design · 개인 프로젝트</p>
+        <h1 class="title">CYBER<span>PUNK</span><br>2077</h1>
+        <p class="subtitle">나이트 시티 아카이브</p>
+        <p class="desc">
+          사이버펑크 2077을 모티프로 한 비공식 <b>한국어 리디자인 콘셉트</b>.
+          다크 네온 무드의 아트디렉션과 영상·스크롤 인터랙션을 직접 설계해, 세계관을 <b>탐험하는 반응형 인터랙티브 웹</b>으로 완성했습니다.
+        </p>
+        <div class="hero-cta">
+          <a class="btn neon" href="https://jhc2265.github.io/cyberpunk2077/" target="_blank" rel="noopener">View Live Site ↗</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-devices" data-state="after">
+          <div class="ba-switch">
+            <div class="ba-seg" role="group" aria-label="공식 사이트와 리디자인 비교">
+              <button type="button" data-ba="before" aria-pressed="false">Before</button>
+              <button type="button" data-ba="after" aria-pressed="true">After</button>
+            </div>
+            <p class="ba-note" data-ba-note>리디자인 콘셉트</p>
+          </div>
+          <div class="browser hero-browser">
+            <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url" data-ba-url>jhc2265.github.io/cyberpunk2077</span></div>
+            <div class="browser-shot autoscroll">
+              <img class="ba-layer" data-when="after" src="web/cyberpunk/pc.webp" alt="Cyberpunk 2077 리디자인 데스크톱 화면">
+              <img class="ba-layer" data-when="before" src="web/cyberpunk/before-pc.webp" alt="사이버펑크 2077 공식 사이트 데스크톱 화면">
+            </div>
+          </div>
+          <div class="phone hero-phone autoscroll">
+            <img class="ba-layer" data-when="after" src="web/cyberpunk/mobile.webp" alt="Cyberpunk 2077 리디자인 모바일 화면">
+            <img class="ba-layer" data-when="before" src="web/cyberpunk/before-mobile.webp" alt="사이버펑크 2077 공식 사이트 모바일 화면">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Project Info -->
+    <section class="section">
+      <p class="kicker">Project Info</p>
+      <div class="meta-row">
+        <div class="meta-item"><span class="meta-label">Category</span><span class="meta-value">Web Design · 팬 리디자인 콘셉트</span></div>
+        <div class="meta-item"><span class="meta-label">My Role</span><span class="meta-value">기획 · UI 디자인 · 퍼블리싱 · 프론트엔드 개발</span></div>
+        <div class="meta-item"><span class="meta-label">Period</span><span class="meta-value">2026.06.15 – 06.23 (9일)</span></div>
+        <div class="meta-item"><span class="meta-label">Platform</span><span class="meta-value">PC · Mobile 반응형</span></div>
+        <div class="meta-item"><span class="meta-label">Contribution</span><span class="meta-value">개인 작업 100%</span></div>
+        <div class="meta-item"><span class="meta-label">Deployment</span><span class="meta-value">GitHub Pages</span></div>
+        <div class="meta-item" style="grid-column: 1 / -1;"><span class="meta-label">Main Feature</span><div class="meta-tags"><span>영상 히어로</span><span>세계관 아카이브</span><span>캐릭터·도시 탐색</span><span>반응형 레이아웃</span></div></div>
+        <div class="meta-item" style="grid-column: 1 / -1;"><span class="meta-label">Tools</span><div class="meta-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>SVG</span><span>IntersectionObserver</span><span>GitHub Pages</span></div></div>
+      </div>
+    </section>
+
+    <!-- Body with Detail Index -->
+    <div class="detail-layout">
+      <aside class="side-index">
+        <h2>Detail Index</h2>
+        <a href="#overview"><span>01</span><em>Overview</em></a>
+        <a href="#problem"><span>02</span><em>Problem &amp; Goal</em></a>
+        <a href="#design"><span>03</span><em>Design Guide</em></a>
+        <a href="#sections"><span>04</span><em>Sections</em></a>
+        <a href="#build"><span>05</span><em>Build</em></a>
+        <a href="#challenges"><span>06</span><em>Challenges</em></a>
+        <a href="#results"><span>07</span><em>Results</em></a>
+        <a href="#retro"><span>—</span><em>Review</em></a>
+      </aside>
+      <div class="content">
+    <section class="section" id="overview">
+      <p class="kicker">Overview</p>
+      <h2>도시는 무너졌고, 전설은 다시 깨어난다</h2>
+      <p class="lead">
+        게임 사이버펑크 2077의 세계관을 <b>인터랙티브 아카이브</b>로 재해석한 팬 리디자인 콘셉트입니다.
+        나이트 시티의 세계관·도시 구역·전설적 캐릭터를 탐험하도록 구성하고, 영상 히어로와 스크롤 인터랙션으로 몰입감을 더했습니다.
+      </p>
+      <p class="lead">
+        세계관 구성부터 아트디렉션·인터랙션 설계까지 직접 다루며, 다크 네온 무드의 비주얼을 반응형으로 완성했습니다.
+      </p>
+    </section>
+
+    <!-- Problem & Goal -->
+    <section class="section" id="problem">
+      <p class="kicker">Problem &amp; Goal</p>
+      <h2>왜 이렇게 만들었나</h2>
+      <p class="lead">단순한 팬 페이지가 아니라 <b>원작의 무드를 웹에서 재현</b>하는 것을 목표로, 만들기 전에 방향을 먼저 정리했습니다.</p>
+      <div class="pg">
+        <div class="pg-row">
+          <div class="pg-cell p"><span class="pg-tag">Problem</span>팬 리디자인이라 원작 무드를 못 살리면 그저 그런 웹처럼 보인다.</div>
+          <div class="pg-arrow">→</div>
+          <div class="pg-cell g"><span class="pg-tag">Goal</span>다크 네온·글리치 무드로 원작의 사이버펑크 감성을 재현한다.</div>
+        </div>
+        <div class="pg-row">
+          <div class="pg-cell p"><span class="pg-tag">Problem</span>영상·인터랙션이 많아 기기마다 재생과 성능이 흔들리기 쉽다.</div>
+          <div class="pg-arrow">→</div>
+          <div class="pg-cell g"><span class="pg-tag">Goal</span>기기별 분기 재생과 이미지 경량화로 어디서나 안정적으로 동작시킨다.</div>
+        </div>
+        <div class="pg-row">
+          <div class="pg-cell p"><span class="pg-tag">Problem</span>라이브러리에 기대면 직접 배우는 의미가 줄어든다.</div>
+          <div class="pg-arrow">→</div>
+          <div class="pg-cell g"><span class="pg-tag">Goal</span>순수 HTML·CSS·JS만으로 글리치·네온·인터랙션을 직접 구현한다.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Design Guide -->
+    <section class="section" id="design">
+      <p class="kicker">Design Guide</p>
+      <h2>디자인 가이드</h2>
+      <p class="lead">사이버펑크 특유의 무드를 일관되게 유지하기 위해 키워드부터 컬러·타이포·컴포넌트까지 규칙을 정의하고 전 섹션에 반복 적용했습니다.</p>
+      <div class="guide">
+        <div class="guide-row">
+          <div class="g-label">브랜드 키워드<small>Brand Keyword</small></div>
+          <div class="g-body">
+            <p>어둡고 강렬한 디스토피아 감성을 담기 위해 <b>cyber · neon · glitch</b>를 중심 키워드로 잡고 모든 화면의 무드 기준으로 삼았습니다.</p>
+            <div class="dd-kw"><span>cyber</span><span>neon</span><span>glitch</span><span>dystopia</span></div>
+          </div>
+        </div>
+        <div class="guide-row">
+          <div class="g-label">Color<small>Color Palette</small></div>
+          <div class="g-body">
+            <p>딥 블랙 베이스에 옐로·시안·마젠타 네온을 포인트로 얹어, 어두운 화면 위에서 요소가 빛나 보이도록 대비를 강하게 구성했습니다.</p>
+            <div class="swatches">
+              <div class="sw"><i style="background:#05060a"></i><span>BG<br>#05060A</span></div>
+              <div class="sw"><i style="background:#0c0e16"></i><span>Panel<br>#0C0E16</span></div>
+              <div class="sw"><i style="background:#fcee0a"></i><span>Neon<br>#FCEE0A</span></div>
+              <div class="sw"><i style="background:#29e7ff"></i><span>Cyan<br>#29E7FF</span></div>
+              <div class="sw"><i style="background:#ff2e97"></i><span>Magenta<br>#FF2E97</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="guide-row">
+          <div class="g-label">Typography<small>Type System</small></div>
+          <div class="g-body">
+            <p>굵은 대문자 타이틀과 읽기 쉬운 본문을 조합해, <b>타이틀은 강렬하게 · 정보는 명확하게</b> 보이도록 구성했습니다.</p>
+            <div class="type-demo">
+              <span class="t-logo">CYBER<span>PUNK</span></span>
+              <span class="t-body">Night City Archive — 본문용 산세리프 (Pretendard · Inter)</span>
+            </div>
+          </div>
+        </div>
+        <div class="guide-row">
+          <div class="g-label">Component<small>UI Component</small></div>
+          <div class="g-body">
+            <p>모서리를 자른 네온 버튼, 네온 보더 카드, 시안 아웃라인 태그를 반복 사용해 사이버펑크 <b>UI의 통일감</b>을 유지했습니다.</p>
+            <div class="comp-demo">
+              <span class="demo-btn">Enter Night City →</span>
+              <span class="demo-tag">GLITCH</span>
+              <span class="demo-card">캐릭터 카드</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sections & Flow -->
+    <section class="section" id="sections">
+      <p class="kicker">Sections &amp; Flow</p>
+      <h2>섹션 구성 · 흐름</h2>
+      <div class="flow-board">
+        <div class="flow-step"><figure><img src="web/cyberpunk/flow-hero.webp" alt="히어로 화면" loading="lazy"><figcaption><span class="n">STEP 01</span><span class="nm">히어로</span><span class="ds">배경 영상과 글리치 타이틀로 첫 화면의 몰입감을 잡는 진입부.</span></figcaption></figure></div>
+        <div class="flow-step"><figure><img src="web/cyberpunk/flow-world.webp" alt="세계관 화면" loading="lazy"><figcaption><span class="n">STEP 02</span><span class="nm">세계관</span><span class="ds">나이트 시티의 배경 스토리를 스크롤 등장 연출로 소개.</span></figcaption></figure></div>
+        <div class="flow-step"><figure><img src="web/cyberpunk/flow-char.webp" alt="캐릭터 화면" loading="lazy"><figcaption><span class="n">STEP 03</span><span class="nm">캐릭터</span><span class="ds">전설적 캐릭터를 선택·전환하며 살펴보는 인터랙티브 아카이브.</span></figcaption></figure></div>
+        <div class="flow-step"><figure><img src="web/cyberpunk/flow-district.webp" alt="도시 구역 화면" loading="lazy"><figcaption><span class="n">STEP 04</span><span class="nm">도시 구역</span><span class="ds">SVG 연결선으로 사진과 미니맵을 잇는 도시 구역 탐색.</span></figcaption></figure></div>
+      </div>
+    </section>
+    <section class="section" id="build">
+      <p class="kicker">Build</p>
+      <h2>구현 포인트</h2>
+      <div class="build">
+        <div class="build-card"><h3>영상 히어로 &amp; 기기별 재생</h3><p>배경 영상과 포스터 폴백을 두고, PC는 hover·모바일은 뷰포트 진입 자동재생으로 분기해 어디서나 자연스럽게 재생.</p></div>
+        <div class="build-card"><h3>스크롤 인터랙션</h3><p>IntersectionObserver로 섹션 진입을 감지해 등장 애니메이션과 캐릭터·구역 전환을 트리거.</p></div>
+        <div class="build-card"><h3>SVG 도시 지도</h3><p>사진과 미니맵을 잇는 연결선을 SVG 좌표로 실시간 계산해, 스크롤·리사이즈에도 정확히 유지.</p></div>
+        <div class="build-card"><h3>라이브러리 없는 네온 무드</h3><p>순수 CSS/JS만으로 글리치 전환·네온·노이즈와 clip-path 각진 UI를 직접 구현해 사이버펑크 분위기 연출.</p></div>
+      </div>
+      <div class="chips">
+        <span>HTML</span><span>CSS</span><span>JavaScript</span><span>반응형</span><span>Video Hero</span><span>GitHub Pages</span>
+      </div>
+    </section>
+
+    <!-- Challenges -->
+    <section class="section" id="challenges">
+      <p class="kicker">Challenges</p>
+      <h2>막혔던 부분 &middot; 해결</h2>
+      <div class="chall"><div class="chall-item"><p class="q"><b>PROBLEM</b>PC와 모바일에서 히어로 영상 재생 방식이 달라야 한다.</p><p class="a"><b>해결 &rarr;</b> PC는 hover, 모바일은 뷰포트 진입 시 자동재생으로 분기해 어느 환경에서도 자연스럽게 재생되도록 했습니다.</p></div><div class="chall-item"><p class="q"><b>PROBLEM</b>도시 지도에서 사진과 미니맵을 자연스럽게 잇고 싶다.</p><p class="a"><b>해결 &rarr;</b> SVG 좌표를 실시간 계산해 연결선을 그려, 스크롤&middot;리사이즈에도 정확히 유지되도록 구현했습니다.</p></div><div class="chall-item"><p class="q"><b>PROBLEM</b>라이브러리 없이 사이버펑크 무드를 만든다.</p><p class="a"><b>해결 &rarr;</b> 순수 CSS/JS만으로 글리치 전환&middot;네온&middot;노이즈 효과를 직접 구현했습니다.</p></div></div>
+    </section>
+    <section class="section" id="results">
+      <p class="kicker">Results</p>
+      <h2>숫자로 보는 작업</h2>
+      <div class="stats"><div class="stat"><div class="num">1인</div><div class="lab">기획 · 디자인 · 개발 전 과정</div></div><div class="stat"><div class="num">93%</div><div class="lab">이미지 경량화 (53.6&rarr;4.0MB)</div></div><div class="stat"><div class="num">100%</div><div class="lab">순수 JavaScript · 라이브러리 없이</div></div><div class="stat"><div class="num">PC·Mobile</div><div class="lab">반응형 대응</div></div></div>
+    </section>
+    <section class="section" id="retro">
+      <p class="kicker">Review</p>
+      <h2>돌아보며</h2>
+      <p class="lead">프레임워크 없이 영상·글리치·SVG 인터랙션을 직접 구현한 프로젝트였습니다. 과정을 배운 점·아쉬운 점·개선 방향으로 정리했습니다.</p>
+      <div class="retro-grid">
+        <div class="retro-card"><h3>배운 점</h3><p>라이브러리 없이 복잡한 인터랙션을 직접 구현하며 JS·DOM·이벤트와 IntersectionObserver를 깊이 이해했습니다.</p></div>
+        <div class="retro-card"><h3>아쉬운 점</h3><p>초반 이미지가 무거웠고, 영상·효과가 많아 저사양 기기에서의 최적화를 더 챙기지 못한 점이 아쉽습니다.</p></div>
+        <div class="retro-card"><h3>개선 방향</h3><p>후반 93% 경량화 경험을 살려, 처음부터 성능 예산을 잡고 지연 로딩·프리로드를 설계에 넣고 싶습니다.</p></div>
+      </div>
+    </section>
+      </div>
+    </div>
+    <section class="cta-band">
+      <h2>실제 사이트에서 <span>나이트 시티</span>를 탐험해보세요.</h2>
+      <a class="btn neon" href="https://jhc2265.github.io/cyberpunk2077/" target="_blank" rel="noopener">View Live Site ↗</a>
+    </section>
+
+    <footer class="bottom-nav">
+      <a href="index.html#work"><span>Back to Portfolio</span><span>←</span></a>
+      <a class="next" href="project-cozybrew.html">
+        <span class="next-label"><em>Next Project</em><strong>cozybrew</strong></span>
+        <span>→</span>
+      </a>
+    </footer>
+  </main>
+  <script>
+  /* Detail Index scroll-spy — 현재 섹션 목차 항목을 강조색으로 하이라이트 */
+  (function () {
+    var idx = document.querySelector('.side-index');
+    if (!idx) return;
+    var links = [].slice.call(idx.querySelectorAll('a[href^="#"]'));
+    if (!links.length) return;
+    var probe = idx.querySelector('a span');
+    var accent = probe ? getComputedStyle(probe).color : '';
+    var byId = {}, sections = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (el) { byId[el.id] = a; sections.push(el); }
+    });
+    if (!sections.length) return;
+    var current = null;
+    function paint(a, on) {
+      var lbl = a.querySelector('em') || a;
+      a.style.fontWeight = on ? '700' : '';
+      if (accent) lbl.style.color = on ? accent : '';
+      a.classList.toggle('active', on);
+    }
+    function setActive(a) {
+      if (current === a) return;
+      if (current) paint(current, false);
+      paint(a, true);
+      current = a;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      var vis = entries.filter(function (e) { return e.isIntersecting; });
+      if (!vis.length) return;
+      vis.sort(function (x, y) { return x.boundingClientRect.top - y.boundingClientRect.top; });
+      var a = byId[vis[0].target.id];
+      if (a) setActive(a);
+    }, { rootMargin: '-30% 0px -45% 0px', threshold: 0 });
+    sections.forEach(function (s) { io.observe(s); });
+  })();
+
+  /* Hero Before / After — 히어로 목업을 공식 사이트 / 리디자인으로 전환 */
+  (function () {
+    var devices = document.querySelector('.hero-devices');
+    var seg = document.querySelector('.ba-seg');
+    if (!devices || !seg) return;
+    var url = document.querySelector('[data-ba-url]');
+    var note = document.querySelector('[data-ba-note]');
+    var COPY = {
+      before: { url: 'cyberpunk.net', note: '공식 사이트' },
+      after: { url: 'jhc2265.github.io/cyberpunk2077', note: '리디자인 콘셉트' }
+    };
+    seg.addEventListener('click', function (e) {
+      var btn = e.target.closest('button[data-ba]');
+      if (!btn) return;
+      var state = btn.dataset.ba;
+      if (devices.dataset.state === state) return;
+      devices.dataset.state = state;
+      seg.querySelectorAll('button[data-ba]').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.ba === state));
+      });
+      if (url) url.textContent = COPY[state].url;
+      if (note) note.textContent = COPY[state].note;
+    });
+  })();
+  </script>
+  <button class="to-top" type="button" aria-label="맨 위로">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+  <script>
+  /* Scroll to top — 조금 내려가면 나타나고, 누르면 맨 위로 */
+  (function () {
+    var btn = document.querySelector('.to-top');
+    if (!btn) return;
+    function sync() { btn.classList.toggle('show', window.scrollY > 500); }
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+    btn.addEventListener('click', function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  })();
+  </script>
+  <!-- Typography tuner — only runs when the URL carries ?tune, so visitors
+       never load it. Writes --body-lh / --body-size / --body-measure live and
+       hands back the :root block to paste into the stylesheet. -->
+  <script>
+  (function () {
+    if (!/(^|[?&])tune\b/.test(location.search)) return;
+
+    var FIELDS = [
+      { key: '--body-lh',      label: '본문 행간', min: 1.4,  max: 2.1, step: 0.01, unit: '' },
+      { key: '--body-size',    label: '본문 크기', min: 14,   max: 20,  step: 0.5,  unit: 'px' },
+      { key: '--body-measure', label: '본문 폭',   min: 520,  max: 900, step: 10,   unit: 'px' }
+    ];
+    var STORE = 'tune:' + location.pathname;
+    var root = document.documentElement;
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) {}
+
+    // Defaults come from the stylesheet, so the panel always starts at the
+    // page's real values rather than a duplicated guess.
+    var css = getComputedStyle(root);
+    FIELDS.forEach(function (f) {
+      f.initial = parseFloat(css.getPropertyValue(f.key));
+      f.value = saved[f.key] != null ? saved[f.key] : f.initial;
+    });
+
+    var box = document.createElement('div');
+    box.dir = 'ltr';
+    box.style.cssText = [
+      'position:fixed', 'right:18px', 'bottom:18px', 'z-index:99999',
+      'width:260px', 'padding:16px 18px 14px', 'border-radius:12px',
+      'background:rgba(20,22,28,0.94)', 'color:#fff',
+      'font:500 12px/1.5 ui-sans-serif,system-ui,sans-serif',
+      'box-shadow:0 12px 34px rgba(0,0,0,0.34)', 'backdrop-filter:blur(8px)'
+    ].join(';');
+
+    var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+               '<b style="font-size:12px;letter-spacing:0.08em">TYPOGRAPHY</b>' +
+               '<button data-act="close" style="all:unset;cursor:pointer;opacity:0.55;padding:2px 4px">✕</button></div>';
+    FIELDS.forEach(function (f, i) {
+      html += '<label style="display:block;margin-bottom:11px">' +
+              '<span style="display:flex;justify-content:space-between;margin-bottom:4px">' +
+              '<span style="opacity:0.7">' + f.label + '</span>' +
+              '<output data-out="' + i + '" style="font-variant-numeric:tabular-nums"></output></span>' +
+              '<input type="range" data-idx="' + i + '" min="' + f.min + '" max="' + f.max +
+              '" step="' + f.step + '" value="' + f.value + '" style="width:100%;accent-color:#7aa7ff"></label>';
+    });
+    html += '<div style="display:flex;gap:6px;margin-top:4px">' +
+            '<button data-act="copy" style="flex:1;all:unset;cursor:pointer;text-align:center;padding:7px 0;border-radius:7px;background:#3b6df0">CSS 복사</button>' +
+            '<button data-act="reset" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:7px;background:rgba(255,255,255,0.14)">되돌리기</button></div>' +
+            '<div data-note style="margin-top:8px;min-height:14px;opacity:0.6;font-size:11px"></div>';
+    box.innerHTML = html;
+    document.body.appendChild(box);
+
+    var note = box.querySelector('[data-note]');
+    function apply(persist) {
+      FIELDS.forEach(function (f, i) {
+        root.style.setProperty(f.key, f.value + f.unit);
+        box.querySelector('[data-out="' + i + '"]').textContent = f.value + f.unit;
+      });
+      if (persist) {
+        var o = {};
+        FIELDS.forEach(function (f) { o[f.key] = f.value; });
+        try { localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) {}
+      }
+    }
+    apply(false);
+
+    box.addEventListener('input', function (e) {
+      var i = e.target.getAttribute('data-idx');
+      if (i === null) return;
+      FIELDS[i].value = parseFloat(e.target.value);
+      apply(true);
+      note.textContent = '';
+    });
+
+    box.addEventListener('click', function (e) {
+      var act = e.target.getAttribute('data-act');
+      if (act === 'close') { box.remove(); return; }
+      if (act === 'reset') {
+        FIELDS.forEach(function (f, i) {
+          f.value = f.initial;
+          box.querySelector('[data-idx="' + i + '"]').value = f.initial;
+        });
+        try { localStorage.removeItem(STORE); } catch (err) {}
+        apply(false);
+        note.textContent = '스타일시트 값으로 되돌렸습니다';
+        return;
+      }
+      if (act === 'copy') {
+        var text = FIELDS.map(function (f) {
+          return '  ' + f.key + ': ' + f.value + f.unit + ';';
+        }).join('\n');
+        navigator.clipboard.writeText(text).then(function () {
+          note.textContent = '복사됨 — :root에 붙여넣으세요';
+        }, function () {
+          note.textContent = text;
+        });
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
