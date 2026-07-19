@@ -22,9 +22,10 @@
       --holo-grad: linear-gradient(135deg, #542BB4 0%, #7448DD 45%, #E95AA4 100%);
       font-family: Inter, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
 
-      /* Body typography — the ?tune panel writes these three at runtime.
-         Every body-copy rule reads them, so a change here is the only edit
-         needed; nothing else hard-codes a size, leading or measure. */
+      /* Body typography. Every body-copy rule reads these three, so changing
+         one here is the only edit needed — nothing else hard-codes a size,
+         leading or measure. 1.85 rather than the usual 1.6 because Hangul has
+         no ascenders or descenders and reads denser at the same value. */
       --body-lh: 1.85;
       --body-size: 16px;
       --body-measure: 900px;
@@ -1036,107 +1037,6 @@
     btn.addEventListener('click', function () {
       var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
-    });
-  })();
-  </script>
-  <!-- Typography tuner — only runs when the URL carries ?tune, so visitors
-       never load it. Writes --body-lh / --body-size / --body-measure live and
-       hands back the :root block to paste into the stylesheet. -->
-  <script>
-  (function () {
-    if (!/(^|[?&])tune\b/.test(location.search)) return;
-
-    var FIELDS = [
-      { key: '--body-lh',      label: '본문 행간', min: 1.4,  max: 2.1, step: 0.01, unit: '' },
-      { key: '--body-size',    label: '본문 크기', min: 14,   max: 20,  step: 0.5,  unit: 'px' },
-      { key: '--body-measure', label: '본문 폭',   min: 520,  max: 900, step: 10,   unit: 'px' }
-    ];
-    var STORE = 'tune:' + location.pathname;
-    var root = document.documentElement;
-    var saved = {};
-    try { saved = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) {}
-
-    // Defaults come from the stylesheet, so the panel always starts at the
-    // page's real values rather than a duplicated guess.
-    var css = getComputedStyle(root);
-    FIELDS.forEach(function (f) {
-      f.initial = parseFloat(css.getPropertyValue(f.key));
-      f.value = saved[f.key] != null ? saved[f.key] : f.initial;
-    });
-
-    var box = document.createElement('div');
-    box.dir = 'ltr';
-    box.style.cssText = [
-      'position:fixed', 'right:18px', 'bottom:18px', 'z-index:99999',
-      'width:260px', 'padding:16px 18px 14px', 'border-radius:12px',
-      'background:rgba(20,22,28,0.94)', 'color:#fff',
-      'font:500 12px/1.5 ui-sans-serif,system-ui,sans-serif',
-      'box-shadow:0 12px 34px rgba(0,0,0,0.34)', 'backdrop-filter:blur(8px)'
-    ].join(';');
-
-    var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
-               '<b style="font-size:12px;letter-spacing:0.08em">TYPOGRAPHY</b>' +
-               '<button data-act="close" style="all:unset;cursor:pointer;opacity:0.55;padding:2px 4px">✕</button></div>';
-    FIELDS.forEach(function (f, i) {
-      html += '<label style="display:block;margin-bottom:11px">' +
-              '<span style="display:flex;justify-content:space-between;margin-bottom:4px">' +
-              '<span style="opacity:0.7">' + f.label + '</span>' +
-              '<output data-out="' + i + '" style="font-variant-numeric:tabular-nums"></output></span>' +
-              '<input type="range" data-idx="' + i + '" min="' + f.min + '" max="' + f.max +
-              '" step="' + f.step + '" value="' + f.value + '" style="width:100%;accent-color:#7aa7ff"></label>';
-    });
-    html += '<div style="display:flex;gap:6px;margin-top:4px">' +
-            '<button data-act="copy" style="flex:1;all:unset;cursor:pointer;text-align:center;padding:7px 0;border-radius:7px;background:#3b6df0">CSS 복사</button>' +
-            '<button data-act="reset" style="all:unset;cursor:pointer;padding:7px 12px;border-radius:7px;background:rgba(255,255,255,0.14)">되돌리기</button></div>' +
-            '<div data-note style="margin-top:8px;min-height:14px;opacity:0.6;font-size:11px"></div>';
-    box.innerHTML = html;
-    document.body.appendChild(box);
-
-    var note = box.querySelector('[data-note]');
-    function apply(persist) {
-      FIELDS.forEach(function (f, i) {
-        root.style.setProperty(f.key, f.value + f.unit);
-        box.querySelector('[data-out="' + i + '"]').textContent = f.value + f.unit;
-      });
-      if (persist) {
-        var o = {};
-        FIELDS.forEach(function (f) { o[f.key] = f.value; });
-        try { localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) {}
-      }
-    }
-    apply(false);
-
-    box.addEventListener('input', function (e) {
-      var i = e.target.getAttribute('data-idx');
-      if (i === null) return;
-      FIELDS[i].value = parseFloat(e.target.value);
-      apply(true);
-      note.textContent = '';
-    });
-
-    box.addEventListener('click', function (e) {
-      var act = e.target.getAttribute('data-act');
-      if (act === 'close') { box.remove(); return; }
-      if (act === 'reset') {
-        FIELDS.forEach(function (f, i) {
-          f.value = f.initial;
-          box.querySelector('[data-idx="' + i + '"]').value = f.initial;
-        });
-        try { localStorage.removeItem(STORE); } catch (err) {}
-        apply(false);
-        note.textContent = '스타일시트 값으로 되돌렸습니다';
-        return;
-      }
-      if (act === 'copy') {
-        var text = FIELDS.map(function (f) {
-          return '  ' + f.key + ': ' + f.value + f.unit + ';';
-        }).join('\n');
-        navigator.clipboard.writeText(text).then(function () {
-          note.textContent = '복사됨 — :root에 붙여넣으세요';
-        }, function () {
-          note.textContent = text;
-        });
-      }
     });
   })();
   </script>
