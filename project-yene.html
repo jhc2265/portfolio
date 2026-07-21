@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>YENE — Website Redesign | JO HYEON CHAE</title>
+  <link rel="stylesheet" href="assets/css/grid.css">
   <style>
     :root {
       --bg: #f7f7f4;
@@ -29,22 +30,16 @@
       --body-size: 16px;
       --body-measure: 900px;
     }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+
     body { margin: 0; background: var(--bg); color: var(--text); line-height: 1.6; }
-    a { color: inherit; text-decoration: none; }
 
     /* The page fills the viewport so backgrounds, rules and the nav reach both
        edges. Each top-level section adds --gutter to its own inline padding,
        which keeps the content itself on a centred 1440px grid. Below 1440px the
        gutter is 0, so narrow screens behave exactly as before. */
-    .page {
-      --gutter: max(0px, (100% - 1440px) / 2);
-      width: 100%;
-      background: var(--bg);
-    }
 
     /* Nav */
+
     .nav {
       position: sticky; top: 0; z-index: 10; height: 72px;
       padding-block: 0; padding-inline: calc(48px + var(--gutter));
@@ -53,11 +48,13 @@
       background: rgba(247, 247, 244, 0.9); backdrop-filter: blur(12px);
       letter-spacing: 0.12em; font-size: 13px; font-weight: 700;
     }
-    .nav .back { display: flex; align-items: center; gap: 10px; }
+
     .nav-links { display: flex; gap: 24px; align-items: center; color: var(--muted); }
+
     .nav-links a:hover { color: var(--text); }
 
     /* Gradient stack (hero + info scene) */
+
     .grad-stack { background: var(--yene-grad); }
 
     .hero {
@@ -67,232 +64,339 @@
       padding-inline: var(--gutter);
       background:
         linear-gradient(90deg, rgba(15,28,52,0.96) 0%, rgba(15,28,52,0.92) 30%, rgba(23,41,74,0.62) 64%, rgba(34,64,110,0.38) 100%),
-        url("web/yene/hero-bg.webp") center / cover no-repeat;
+        url("assets/projects/yene/hero-bg.webp") center / cover no-repeat;
     }
+
     .hero-text {
       padding: 64px 72px;
       display: flex; flex-direction: column; justify-content: center; gap: 40px;
     }
+
     .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); }
+
     .project-title { margin: 20px 0 0; font-size: clamp(72px, 9vw, 150px); line-height: 0.9; letter-spacing: -0.04em; font-weight: 900; }
+
     .project-subtitle { margin: 22px 0 0; max-width: 520px; font-size: 21px; font-weight: 700; line-height: 1.45; word-break: keep-all; }
+
     .project-desc { margin: 16px 0 0; max-width: 540px; color: rgba(255,255,255,0.9); font-size: 16px; word-break: keep-all; }
+
     .hero-cta { margin-top: 22px; }
+
     .btn {
-      display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; border-radius: 8px;
-      font-size: 14px; font-weight: 700; border: 1px solid #fff; transition: transform 0.15s ease;
+      display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px; border-radius: 8px;
+      font-size: 14px; font-weight: 800; border: 1px solid #fff; transition: transform 0.15s ease;
     }
+
     .btn:hover { transform: translateY(-2px); }
+
     .btn.solid { background: var(--orange); color: #101d38; border-color: var(--orange); }
 
     .hero-visual { padding: 64px 72px; display: flex; align-items: center; justify-content: center; }
 
     /* Info scene */
+
     .info-scene {
       min-height: 100vh; color: #fff;
       display: flex; align-items: center;
       padding-block: 90px; padding-inline: calc(48px + var(--gutter));
       border-bottom: 1px solid var(--line);
     }
-    .info-inner { width: 100%; max-width: 860px; margin: 0 auto; }
+
     .info-kicker { margin: 0 0 10px; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); }
+
     .info-title { margin: 0 0 44px; font-size: clamp(38px, 6vw, 78px); font-weight: 900; letter-spacing: -0.05em; line-height: 1; }
+
     .meta-row { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid rgba(255,255,255,0.25); }
+
     .meta-item { padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.18); }
+
     .meta-item:nth-child(odd) { padding-right: 20px; }
+
     .meta-label { display: block; margin-bottom: 6px; color: rgba(255,255,255,0.7); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+
     .meta-value { font-size: 15px; font-weight: 700; word-break: keep-all; }
+
     .info-scene .info-kicker, .info-scene .info-title, .info-scene .meta-item {
       opacity: 0; transform: translateY(38px); transition: opacity 0.7s cubic-bezier(.2,.7,.2,1), transform 0.7s cubic-bezier(.2,.7,.2,1);
     }
+
     .info-scene.in .info-kicker, .info-scene.in .info-title, .info-scene.in .meta-item { opacity: 1; transform: none; }
+
     .info-scene.in .info-title { transition-delay: .06s; }
+
     .info-scene.in .meta-item:nth-child(1) { transition-delay: .14s; }
+
     .info-scene.in .meta-item:nth-child(2) { transition-delay: .21s; }
+
     .info-scene.in .meta-item:nth-child(3) { transition-delay: .28s; }
+
     .info-scene.in .meta-item:nth-child(4) { transition-delay: .35s; }
+
     .info-scene.in .meta-item:nth-child(5) { transition-delay: .42s; }
+
     @media (prefers-reduced-motion: reduce) { .info-scene .info-kicker, .info-scene .info-title, .info-scene .meta-item { opacity: 1; transform: none; transition: none; } }
 
     /* Body layout */
+
     .detail-layout { display: grid; grid-template-columns: 280px 1fr; border-bottom: 1px solid var(--line); padding-inline: var(--gutter); }
+
     .side-index { position: sticky; top: 72px; height: calc(100vh - 72px); padding: 48px 32px; border-right: 1px solid var(--soft-line); align-self: start; }
+
     .side-index h2 { margin: 0 0 32px; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; }
+
     .side-index a { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--soft-line); color: var(--muted); font-size: 13px; }
+
     .side-index a:hover em { color: var(--text); }
+
     .side-index span:first-child { font-weight: 700; color: var(--orange); }
+
     .side-index em { font-style: normal; }
 
     .section { display: grid; grid-template-columns: 200px 1fr; gap: 48px; padding: 64px 56px; border-bottom: 1px solid var(--soft-line); }
+
     .section:last-child { border-bottom: 0; }
+
     .section-title { margin: 0; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; }
+
     .section-number { display: block; margin-bottom: 12px; color: var(--orange); font-size: 13px; font-weight: 700; }
+
     .section-body h3 { margin: 0 0 16px; font-size: clamp(26px, 3.4vw, 46px); line-height: 1.08; letter-spacing: -0.04em; word-break: keep-all; }
+
     .section-body p { max-width: 780px; margin: 0; color: #333; font-size: 16px; word-break: keep-all; }
+
     .section-body p + p { margin-top: 14px; }
+
     .section-body b { color: #b5730a; }
 
     .facts { list-style: none; margin: 20px 0 0; padding: 0; border-top: 1px solid var(--line); max-width: 820px; }
+
     .facts li { display: grid; grid-template-columns: 190px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--soft-line); font-size: 15px; word-break: keep-all; }
+
     .facts li b { color: #b5730a; }
 
     .concept-board { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
     .concept-card { padding: 24px; border: 1px solid var(--line); background: var(--card); }
+
     .concept-card strong { display: block; margin-bottom: 10px; font-size: 19px; }
+
     .concept-card p { font-size: 15px; color: var(--muted); }
 
     /* Browser mockup */
+
     .browser { border: 1px solid var(--soft-line); border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 8px 20px rgba(15, 28, 52, 0.06); }
+
     .browser-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: #f0efec; border-bottom: 1px solid var(--soft-line); }
-    .browser-bar .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
-    .browser-bar .r { background: #ff5f57; } .browser-bar .y { background: #febc2e; } .browser-bar .g { background: #28c840; }
+
     .browser-bar .url { margin-left: 8px; font-size: 11px; color: var(--muted); background: #fff; border: 1px solid var(--soft-line); border-radius: 6px; padding: 3px 12px; flex: 1; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
     .browser-shot { overflow: hidden; }
+
     .browser-shot img { width: 100%; display: block; }
+
     .browser-shot.scroll { max-height: 480px; overflow-y: auto; }
+
     .browser-shot.crop { max-height: 430px; }
+
     .browser-fig { margin: 0; }
+
     .browser-fig figcaption { margin-top: 9px; font-size: 12.5px; color: var(--muted); word-break: keep-all; }
+
     .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; vertical-align: middle; }
+
     .tag.before { background: #e6e6e2; color: #555; }
+
     .tag.after { background: var(--orange); color: #101d38; }
 
     .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
     .ba-points { list-style: none; margin: 22px 0 0; padding: 0; border-top: 1px solid var(--line); max-width: 820px; }
+
     .ba-points li { display: grid; grid-template-columns: 180px 1fr; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--soft-line); font-size: 15px; word-break: keep-all; }
+
     .ba-points li strong { color: #101d38; }
 
     /* My contribution */
+
     .contrib { }
+
     .contrib-item { padding: 30px 0; border-bottom: 1px solid var(--soft-line); }
+
     .contrib-item:last-child { border-bottom: 0; }
+
     .contrib-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+
     .contrib-head strong { font-size: 19px; }
+
     .contrib-item > p { margin: 0 0 20px; color: var(--muted); font-size: 15px; max-width: 760px; word-break: keep-all; }
+
     .mine { display: inline-block; margin-left: 6px; padding: 2px 9px; border-radius: 20px; background: var(--orange); color: #101d38; font-size: 11px; font-weight: 700; vertical-align: middle; }
+
     .proposal-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 820px; }
+
     .proposal-row img { width: 100%; display: block; border: 1px solid var(--soft-line); border-radius: 6px; }
+
     /* 실제 발송 증빙 */
+
     .proof-send { margin-top: 20px; max-width: 560px; }
+
     .proof-cap { margin: 0 0 12px; font-size: 14px; color: var(--muted); word-break: keep-all; }
+
     .proof-cap b { color: var(--navy); }
+
     .proof-shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
     .proof-shots figure { margin: 0; }
+
     .proof-shots img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; border: 1px solid var(--soft-line); border-radius: 8px; }
+
     .proof-shots figcaption { margin-top: 7px; font-size: 12px; color: var(--muted); word-break: keep-all; }
 
     /* Resolution-independent phone mockup shared with the other project pages. */
+
     .phone { flex: none; position: relative; width: 220px; aspect-ratio: 685 / 1433; filter: drop-shadow(0 14px 24px rgba(15, 28, 52, 0.24)); }
-    .phone::after { content: ""; position: absolute; inset: 0; background: url("mockup/iphone17-frame.webp") center / 100% 100% no-repeat; z-index: 2; pointer-events: none; }
+
     .phone .screen { position: absolute; top: 1.54%; left: 4.53%; width: 90.95%; height: 97%; border-radius: 11% / 5%; overflow: hidden; background: #fff; z-index: 1; }
+
     .phone .screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
 
     .result-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+
     .result-row { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; align-items: start; }
 
     .review-box { padding: 36px; border: 1px solid var(--line); background: var(--navy); color: var(--bg); }
+
     .review-box p { margin: 0; color: var(--bg); font-size: 21px; line-height: 1.5; font-weight: 700; word-break: keep-all; }
 
     .bottom-nav { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); padding-inline: var(--gutter); }
+
     .bottom-nav a { padding: 34px 48px; border-right: 1px solid var(--line); font-size: 17px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
-    .bottom-nav a:last-child { border-right: 0; }
+
     .bottom-nav a:hover { background: var(--soft); }
-    .bottom-nav .next-label { display: flex; flex-direction: column; gap: 5px; }
-    .bottom-nav .next-label em { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-    .bottom-nav .next-label strong { font-weight: 800; }
 
     /* Hero device composition (PC + phone, auto-scroll) */
+
     .hero-devices { position: relative; width: 100%; max-width: 640px; }
-    .hero-browser { width: 100%; }
+
     .hero-phone { position: absolute; right: -24px; bottom: -30px; width: 166px; z-index: 3; filter: drop-shadow(0 10px 15px rgba(15, 28, 52, 0.14)); }
+
     .browser-shot.autoscroll { --shot-h: 430px; height: var(--shot-h); overflow: hidden; }
+
     /* 마우스를 올리면 전체 페이지가 위→아래로 스르륵 스크롤, 떼면 다시 위로 */
-    .browser-shot.autoscroll img { transform: translateY(0); transition: transform 5.5s ease-in-out; will-change: transform; }
-    .phone.autoscroll img { transition: object-position 5.5s ease-in-out; will-change: object-position; }
-    .browser-shot.autoscroll:hover img { transform: translateY(calc(-100% + var(--shot-h))); }
-    .phone.autoscroll:hover img { object-position: bottom; }
+
     /* focus one device on hover: hovered grows & comes forward, the other tucks behind */
-    .hero-browser { position: relative; }
-    .hero-browser, .hero-phone { transition: transform 0.35s ease; }
-    .hero-devices:has(.hero-browser:hover) .hero-browser { transform: scale(1.02); z-index: 4; }
-    .hero-devices:has(.hero-phone:hover) .hero-phone { transform: scale(1.05); }
-    @media (prefers-reduced-motion: reduce) {
-      .hero-browser, .hero-phone { transition: none; }
-      .hero-devices:has(.hero-browser:hover) .hero-browser,
-      .hero-devices:has(.hero-phone:hover) .hero-phone { transform: none; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .browser-shot.autoscroll img, .phone.autoscroll img { transition: none; }
-      .browser-shot.autoscroll:hover img { transform: translateY(0); }
-      .phone.autoscroll:hover img { object-position: top; }
-    }
 
     /* Hero Before / After toggle */
+
     .ba-switch { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+
     .ba-seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16); }
+
     .ba-seg button { appearance: none; border: 0; cursor: pointer; padding: 7px 18px; border-radius: 999px; background: transparent; color: rgba(255, 255, 255, 0.62); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; transition: background 0.25s ease, color 0.25s ease; }
+
     .ba-seg button:hover { color: #fff; }
+
     .ba-seg button[aria-pressed="true"] { background: var(--orange); color: #101d38; }
+
     .ba-note { margin: 0; font-size: 12.5px; color: rgba(255, 255, 255, 0.62); white-space: nowrap; }
 
     /* crossfade layers: 두 시점의 스크린샷을 겹쳐두고 opacity로 전환 */
+
     .hero-browser .browser-shot.autoscroll { position: relative; }
+
     .hero-browser .browser-shot.autoscroll img,
     .hero-phone img { transition: transform 5.5s ease-in-out, object-position 5.5s ease-in-out, opacity 0.45s ease; }
+
     .hero-browser .browser-shot.autoscroll img { position: absolute; top: 0; left: 0; }
+
     .hero-devices .ba-layer[data-when="before"] { opacity: 0; }
+
     .hero-devices[data-state="before"] .ba-layer[data-when="after"] { opacity: 0; }
+
     .hero-devices[data-state="before"] .ba-layer[data-when="before"] { opacity: 1; }
+
     /* 기존 모바일 캡처는 하단이 여백이라, before 상태에서는 자동 스크롤을 멈춘다 */
+
     .hero-devices[data-state="before"] .phone.autoscroll:hover img { object-position: top; }
+
     .mobile-warn { position: absolute; left: 50%; bottom: 14px; z-index: 3; transform: translateX(-50%); white-space: nowrap; padding: 5px 11px; border-radius: 999px; background: #c0392b; color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 0.02em; opacity: 0; transition: opacity 0.45s ease; pointer-events: none; }
+
     .hero-devices[data-state="before"] .mobile-warn { opacity: 1; }
+
     @media (prefers-reduced-motion: reduce) {
       .hero-browser .browser-shot.autoscroll img, .hero-phone img, .mobile-warn { transition: opacity 0.45s ease; }
     }
 
     /* Design Guide */
+
     .guide { margin-top: 24px; border: 1px solid var(--line); max-width: 900px; }
+
     .guide-row { display: grid; grid-template-columns: 180px 1fr; gap: 26px; padding: 26px; border-top: 1px solid var(--soft-line); background: var(--card); }
-    .guide-row:first-child { border-top: 0; }
+
     .g-label { font-size: 15px; font-weight: 800; color: var(--navy); }
-    .g-label small { display: block; margin-top: 5px; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+
     .g-body p { margin: 0; font-size: 14.5px; color: #333; line-height: 1.7; word-break: keep-all; }
+
     .g-body .palette, .g-body .kw, .g-body .type-demo { margin-top: 16px; }
+
     .palette { display: flex; gap: 10px; flex-wrap: wrap; }
+
     .sw { width: 54px; height: 54px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); }
+
     .kw { display: flex; flex-wrap: wrap; gap: 8px; }
+
     .kw span { border: 1px solid var(--soft-line); background: var(--card); border-radius: 999px; padding: 7px 14px; font-size: 12px; font-weight: 700; color: var(--navy); }
-    .type-demo { display: flex; flex-direction: column; gap: 4px; }
+
     .type-demo .t-logo { font-size: 32px; font-weight: 900; letter-spacing: -0.02em; color: var(--navy); }
+
     .type-demo .t-body { font-size: 13.5px; color: var(--muted); }
 
     /* Build */
+
     .build { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; max-width: 900px; }
+
     .build-card { border: 1px solid var(--soft-line); background: var(--card); padding: 22px; }
+
     .build-card h3 { margin: 0 0 8px; font-size: 17px; color: var(--navy); }
+
     .build-card p { margin: 0; color: var(--muted); font-size: 14.5px; word-break: keep-all; }
+
     .stack-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+
     .stack-chips span { border: 1px solid var(--soft-line); color: var(--muted); font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px; }
 
     /* Challenges */
+
     .chall { display: grid; gap: 12px; margin-top: 24px; max-width: 900px; }
+
     .chall-item { border: 1px solid var(--soft-line); background: var(--card); padding: 20px 24px; }
+
     .chall-item .q { margin: 0 0 8px; font-size: 15.5px; font-weight: 800; word-break: keep-all; }
+
     .chall-item .q b { color: #b5730a; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; margin-right: 8px; }
+
     .chall-item .a { margin: 0; font-size: 14.5px; color: var(--muted); word-break: keep-all; line-height: 1.7; }
+
     .chall-item .a b { color: var(--navy); }
 
     /* Results stats */
+
     .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); margin: 6px 0 26px; max-width: 900px; }
+
     .stat { padding: 22px 20px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--card); }
+
     .stat .num { font-size: clamp(26px, 3.2vw, 40px); font-weight: 900; letter-spacing: -0.03em; color: #b5730a; line-height: 1.1; }
+
     .stat .lbl { margin-top: 10px; font-size: 13px; color: var(--muted); line-height: 1.45; word-break: keep-all; }
 
     /* Retrospective 3-split */
+
     .retro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 26px; max-width: 900px; }
+
     .retro-card { border: 1px solid var(--soft-line); background: var(--card); padding: 22px; }
+
     .retro-card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 800; color: var(--navy); letter-spacing: 0.02em; }
+
     .retro-card p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.65; word-break: keep-all; }
 
     @media (max-width: 780px) {
@@ -300,14 +404,16 @@
       .build, .retro-grid { grid-template-columns: 1fr; }
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
     }
+
     @media (max-width: 900px) {
       .nav { padding: 0 20px; }
       .hero, .detail-layout, .section { grid-template-columns: 1fr; }
+      .meta-row { grid-template-columns: 1fr; } .meta-item:nth-child(odd) { padding-right: 0; }
       /* Stacked hero: crop toward the warm side and wash top-down instead of left-right */
       .hero {
         background:
           linear-gradient(180deg, rgba(15,28,52,0.95) 0%, rgba(15,28,52,0.9) 42%, rgba(23,41,74,0.6) 74%, rgba(34,64,110,0.4) 100%),
-          url("web/yene/hero-bg.webp") 72% center / cover no-repeat;
+          url("assets/projects/yene/hero-bg.webp") 72% center / cover no-repeat;
       }
       .hero-devices { max-width: 460px; margin: 0 auto; }
       .hero-phone { right: -8px; bottom: -16px; width: 128px; }
@@ -322,6 +428,7 @@
     }
 
     /* Scroll to top — 스크롤 중 언제든 맨 위로 */
+
     .to-top {
       position: fixed; right: 24px; bottom: 24px; z-index: 50;
       width: 46px; height: 46px; display: grid; place-items: center;
@@ -330,16 +437,6 @@
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
       opacity: 0; visibility: hidden; transform: translateY(8px);
       transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-    }
-    .to-top svg { display: block; }
-    .to-top.show { opacity: 1; visibility: visible; transform: none; }
-    .to-top:hover { transform: translateY(-2px); }
-    @media (prefers-reduced-motion: reduce) {
-      .to-top { transition: opacity 0.25s ease, visibility 0.25s; }
-      .to-top:hover { transform: none; }
-    }
-    @media (max-width: 900px) {
-      .to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
     }
 
     /* ── Korean typography pass ──
@@ -351,28 +448,33 @@
        evens out heading line lengths. Browsers without text-wrap ignore it and
        render exactly as before. Display headings keep their tight leading —
        Hangul has no descenders, so it does not collide. */
-    .desc, p.lead, .build-card p, .section-body p, .concept-card p,
-    .retro-card p, .chall p, .facts li, .flow-step .ds, .project-desc {
-      line-height: var(--body-lh);
-      text-wrap: pretty;
-    }
+
     /* Size applies to running body copy only — card text and captions keep
        their own smaller scale, which --body-size must not flatten. */
+
     .project-desc { font-size: var(--body-size); }
+
     /* matches the original rules' specificity so these actually win */
+
     .section p.lead { max-width: var(--body-measure); font-size: var(--body-size); }
+
     .section-body p { max-width: var(--body-measure); font-size: var(--body-size); }
-    .title, .project-title, .project-subtitle, .subtitle,
-    .section h2, .section-body h3, .info-title, .cta-band h2 {
-      text-wrap: balance;
-    }
+  
+    /* ── grid.css 공통값 중 팀 페이지 원본과 다른 항목 복원 (0-회귀) ── */
+    img { max-width: none; }
+    .meta-row { margin-top: 0; }
+    .meta-label { font-weight: 400; }
+    .side-index a { font-weight: 400; }
+    .sw { text-align: start; }
+    .guide, .retro-card { border-radius: 0; }
+    .section-body p { line-height: var(--body-lh); }
   </style>
 </head>
 <body>
   <main class="page">
     <header class="nav">
       <a class="back" href="index.html#work"><span>←</span><span>JO HYEON CHAE PORTFOLIO</span></a>
-      <nav class="nav-links"><a href="#overview">OVERVIEW</a><span>/</span><a href="#output">OUTPUT</a></nav>
+      <nav class="nav-links"><a href="https://web5-portfolio-yene.vercel.app" target="_blank" rel="noopener">LIVE ↗</a></nav>
     </header>
 
     <div class="grad-stack">
@@ -403,14 +505,14 @@
           <div class="browser hero-browser">
             <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url" data-ba-url>web5-portfolio-yene.vercel.app</span></div>
             <div class="browser-shot autoscroll">
-              <img class="ba-layer" data-when="after" src="web/yene/main.webp" alt="예네 리디자인 메인페이지 (전체)">
-              <img class="ba-layer" data-when="before" src="web/yene/screen-664.webp" alt="리디자인 전 예네 메인페이지 (전체)">
+              <img class="ba-layer" data-when="after" src="assets/projects/yene/main.webp" alt="예네 리디자인 메인페이지 (전체)">
+              <img class="ba-layer" data-when="before" src="assets/projects/yene/before-main.webp" alt="리디자인 전 예네 메인페이지 (전체)">
             </div>
           </div>
           <div class="phone hero-phone autoscroll">
             <div class="screen">
-              <img class="ba-layer" data-when="after" src="web/yene/mobile-main.webp" alt="예네 리디자인 모바일 메인 (전체)">
-              <img class="ba-layer" data-when="before" src="web/yene/before-mobile.webp" alt="리디자인 전 예네 사이트를 모바일에서 본 화면 — 데스크탑 레이아웃이 그대로 축소되어 내용이 잘림">
+              <img class="ba-layer" data-when="after" src="assets/projects/yene/mobile-main.webp" alt="예네 리디자인 모바일 메인 (전체)">
+              <img class="ba-layer" data-when="before" src="assets/projects/yene/before-mobile.webp" alt="리디자인 전 예네 사이트를 모바일에서 본 화면 — 데스크탑 레이아웃이 그대로 축소되어 내용이 잘림">
               <span class="mobile-warn">모바일 미대응</span>
             </div>
           </div>
@@ -428,6 +530,12 @@
           <div class="meta-item"><span class="meta-label">My Role</span><span class="meta-value">상세페이지 제작 · 제안서 기획 · 초기 페이지 구현</span></div>
           <div class="meta-item"><span class="meta-label">Period</span><span class="meta-value">2026.05.26 – 06.04 (10일)</span></div>
           <div class="meta-item"><span class="meta-label">Platform</span><span class="meta-value">PC · Mobile 반응형</span></div>
+          <div class="meta-item"><span class="meta-label">Contribution</span><span class="meta-value">개인 참여도 40% · 4인 팀</span></div>
+          <div class="meta-item"><span class="meta-label">Deployment</span><span class="meta-value">Vercel</span></div>
+          <div class="meta-item" style="grid-column: 1 / -1;">
+            <span class="meta-label">Main Feature</span>
+            <span class="meta-value">메인 리디자인 · 반응형 구현 · 상세페이지 설득 흐름 · 제안서 기반 설계</span>
+          </div>
           <div class="meta-item" style="grid-column: 1 / -1;">
             <span class="meta-label">Tools</span>
             <span class="meta-value" style="font-weight: 600; line-height: 1.7;">Figma · Photoshop · Illustrator · HTML/CSS · JavaScript · GitHub · Vercel</span>
@@ -481,7 +589,7 @@
             <figure class="browser-fig" style="margin-top:24px; max-width:720px;">
               <div class="browser">
                 <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">yene.co.kr <span class="tag before">Before</span></span></div>
-                <div class="browser-shot scroll"><img src="web/yene/screen-664.webp" alt="리디자인 전 예네 사이트"></div>
+                <div class="browser-shot scroll"><img src="assets/projects/yene/before-main.webp" alt="리디자인 전 예네 사이트"></div>
               </div>
               <figcaption>리디자인 전 — 정보 나열 중심으로 핵심 메시지가 불분명한 상황</figcaption>
             </figure>
@@ -557,14 +665,14 @@
               <figure class="browser-fig">
                 <div class="browser">
                   <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">Before</span></div>
-                  <div class="browser-shot scroll"><img src="web/yene/screen-664.webp" alt="Before 메인"></div>
+                  <div class="browser-shot scroll"><img src="assets/projects/yene/before-main.webp" alt="Before 메인"></div>
                 </div>
                 <figcaption><span class="tag before">Before</span> 오래된 UI · 복잡한 메뉴</figcaption>
               </figure>
               <figure class="browser-fig">
                 <div class="browser">
                   <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">After</span></div>
-                  <div class="browser-shot scroll"><img src="web/yene/main.webp" alt="After 메인"></div>
+                  <div class="browser-shot scroll"><img src="assets/projects/yene/main.webp" alt="After 메인"></div>
                 </div>
                 <figcaption><span class="tag after">After</span> 명확한 메시지 · 간결한 메뉴</figcaption>
               </figure>
@@ -590,7 +698,7 @@
                 <figure class="browser-fig" style="max-width:560px;">
                   <div class="browser">
                     <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">천장형 전기온풍기 상세페이지 <span class="tag after">After</span></span></div>
-                    <div class="browser-shot scroll" style="max-height:560px;"><img src="web/yene/detail.webp" alt="리디자인 상세페이지"></div>
+                    <div class="browser-shot scroll" style="max-height:560px;"><img src="assets/projects/yene/detail.webp" alt="리디자인 상세페이지"></div>
                   </div>
                   <figcaption>제품 상세페이지 — 효과 → 기능 → 사용공간 순의 설득 흐름 (스크롤해서 전체 보기)</figcaption>
                 </figure>
@@ -600,16 +708,16 @@
                 <div class="contrib-head"><strong>제안서 기획 · 제작</strong><span class="mine">My Part</span></div>
                 <p>기존 사이트 진단부터 리디자인 목표·컨셉·Before/After·기대 효과까지, 리디자인의 근거를 담은 제안서를 직접 구성·제작했습니다.</p>
                 <div class="proposal-row">
-                  <img src="web/yene/proposal-1.webp" alt="제안서 표지">
-                  <img src="web/yene/proposal-2.webp" alt="프로젝트 목표">
-                  <img src="web/yene/proposal-3.webp" alt="리디자인 컨셉">
-                  <img src="web/yene/proposal-4.webp" alt="Before/After">
+                  <img src="assets/projects/yene/proposal-1.webp" alt="제안서 표지">
+                  <img src="assets/projects/yene/proposal-2.webp" alt="프로젝트 목표">
+                  <img src="assets/projects/yene/proposal-3.webp" alt="리디자인 컨셉">
+                  <img src="assets/projects/yene/proposal-4.webp" alt="Before/After">
                 </div>
                 <div class="proof-send">
                   <p class="proof-cap">여기서 그치지 않고, 완성한 제안서를 <b>실제로 인쇄해 (주)예네 앞으로 발송</b>했습니다.</p>
                   <div class="proof-shots">
-                    <figure><img src="web/yene/proposal-send-1.webp" alt="인쇄한 제안서와 예네 주소가 적힌 발송 봉투" loading="lazy"><figcaption>인쇄 제안서 · 발송 봉투</figcaption></figure>
-                    <figure><img src="web/yene/proposal-send-2.webp" alt="왁스 실링으로 봉인한 봉투" loading="lazy"><figcaption>왁스 실링 후 발송</figcaption></figure>
+                    <figure><img src="assets/projects/yene/proposal-send-1.webp" alt="인쇄한 제안서와 예네 주소가 적힌 발송 봉투" loading="lazy"><figcaption>인쇄 제안서 · 발송 봉투</figcaption></figure>
+                    <figure><img src="assets/projects/yene/proposal-send-2.webp" alt="왁스 실링으로 봉인한 봉투" loading="lazy"><figcaption>왁스 실링 후 발송</figcaption></figure>
                   </div>
                 </div>
               </div>
@@ -677,12 +785,12 @@
                 <figure class="browser-fig">
                   <div class="browser">
                     <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">web5-portfolio-yene.vercel.app</span></div>
-                    <div class="browser-shot scroll"><img src="web/yene/main.webp" alt="리디자인 메인"></div>
+                    <div class="browser-shot scroll"><img src="assets/projects/yene/main.webp" alt="리디자인 메인"></div>
                   </div>
                   <figcaption>메인페이지 (PC)</figcaption>
                 </figure>
                 <figure class="browser-fig" style="justify-self:center;">
-                  <div class="phone"><div class="screen"><img src="web/yene/mobile-2.webp" alt="반응형 모바일"></div></div>
+                  <div class="phone"><div class="screen"><img src="assets/projects/yene/mobile-2.webp" alt="반응형 모바일"></div></div>
                   <figcaption style="text-align:center;">반응형 모바일</figcaption>
                 </figure>
               </div>

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HOLO — UI·UX Design | JO HYEON CHAE</title>
+  <link rel="stylesheet" href="assets/css/grid.css">
   <style>
     :root {
       --bg: #f7f7f4;
@@ -31,22 +32,15 @@
       --body-measure: 900px;
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
     body { margin: 0; background: var(--bg); color: var(--text); line-height: 1.6; }
-    a { color: inherit; text-decoration: none; }
 
     /* The page fills the viewport so backgrounds, rules and the nav reach both
        edges. Each top-level section adds --gutter to its own inline padding,
        which keeps the content itself on a centred 1440px grid. Below 1440px the
        gutter is 0, so narrow screens behave exactly as before. */
-    .page {
-      --gutter: max(0px, (100% - 1440px) / 2);
-      width: 100%;
-      background: var(--bg);
-    }
 
     /* ── Top nav ── */
+
     .nav {
       position: sticky; top: 0; z-index: 10;
       height: 72px; padding: 0 calc(48px + var(--gutter));
@@ -56,11 +50,13 @@
       backdrop-filter: blur(12px);
       letter-spacing: 0.12em; font-size: 13px; font-weight: 700;
     }
-    .nav .back { display: flex; align-items: center; gap: 10px; }
+
     .nav-links { display: flex; gap: 24px; align-items: center; color: var(--muted); }
+
     .nav-links a:hover { color: var(--text); }
 
     /* ── Hero (HOLO themed gradient) ── */
+
     .hero {
       min-height: calc(100vh - 72px);
       display: grid;
@@ -70,6 +66,7 @@
     }
 
     /* Hero + info scene share one seamless gradient */
+
     .grad-stack {
       background: linear-gradient(160deg, #542BB4 0%, #6b41d1 28%, #8a52d4 52%, #c15cba 78%, #E95AA4 100%);
     }
@@ -101,29 +98,36 @@
     }
 
     .hero-cta { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 13px 22px; border-radius: 30px;
-      font-size: 14px; font-weight: 700; letter-spacing: 0.01em;
+      padding: 13px 24px; border-radius: 30px;
+      font-size: 14px; font-weight: 800; letter-spacing: 0.01em;
       border: 1px solid #fff; transition: transform 0.15s ease, opacity 0.15s ease;
     }
+
     .btn:hover { transform: translateY(-2px); }
+
     .btn.solid { background: #fff; color: var(--holo-deep); }
-    .btn.ghost { background: transparent; color: #fff; }
 
     .meta-row {
       display: grid; grid-template-columns: repeat(2, 1fr);
       border-top: 1px solid rgba(255,255,255,0.25);
     }
+
     .meta-item { padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.18); }
+
     .meta-item:nth-child(odd) { padding-right: 20px; }
+
     .meta-label {
       display: block; margin-bottom: 6px; color: rgba(255,255,255,0.75);
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
     }
+
     .meta-value { font-size: 15px; font-weight: 700; word-break: keep-all; }
 
     /* Second gradient scene — project info with scroll reveal */
+
     .info-scene {
       min-height: 100vh;
       color: #fff;
@@ -131,31 +135,40 @@
       padding-block: 90px; padding-inline: calc(48px + var(--gutter));
       border-bottom: 1px solid var(--line);
     }
-    .info-inner { width: 100%; max-width: 860px; margin: 0 auto; }
+
     .info-kicker {
       margin: 0 0 10px; font-size: 13px; font-weight: 700;
       letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.82);
     }
+
     .info-title {
       margin: 0 0 44px; font-size: clamp(38px, 6vw, 78px);
       font-weight: 900; letter-spacing: -0.05em; line-height: 1;
     }
+
     .info-scene .info-kicker,
     .info-scene .info-title,
     .info-scene .meta-item {
       opacity: 0; transform: translateY(38px);
       transition: opacity 0.7s cubic-bezier(.2,.7,.2,1), transform 0.7s cubic-bezier(.2,.7,.2,1);
     }
+
     .info-scene.in .info-kicker,
     .info-scene.in .info-title,
     .info-scene.in .meta-item { opacity: 1; transform: none; }
+
     .info-scene.in .info-title { transition-delay: .06s; }
+
     /* 같은 줄의 좌·우 칸은 동일 딜레이로 함께 등장 → 가로 구분선이 갈라져 보이지 않음 */
+
     .info-scene.in .meta-item:nth-child(1),
     .info-scene.in .meta-item:nth-child(2) { transition-delay: .14s; }
+
     .info-scene.in .meta-item:nth-child(3),
     .info-scene.in .meta-item:nth-child(4) { transition-delay: .28s; }
+
     .info-scene.in .meta-item:nth-child(5) { transition-delay: .42s; }
+
     @media (prefers-reduced-motion: reduce) {
       .info-scene .info-kicker, .info-scene .info-title, .info-scene .meta-item {
         opacity: 1; transform: none; transition: none;
@@ -163,8 +176,11 @@
     }
 
     /* Floating 3D star decorations on the gradient */
+
     .hero, .info-scene { position: relative; overflow: hidden; }
+
     .hero-text, .hero-visual, .info-inner { position: relative; z-index: 1; }
+
     .deco-star {
       position: absolute;
       z-index: 0;
@@ -174,10 +190,12 @@
       animation: starFloat 7s ease-in-out infinite;
       will-change: transform;
     }
+
     @keyframes starFloat {
       0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
       50% { transform: translateY(-18px) rotate(var(--r, 0deg)); }
     }
+
     @media (prefers-reduced-motion: reduce) { .deco-star { animation: none; } }
 
     .hero-visual {
@@ -186,6 +204,7 @@
     }
 
     /* Resolution-independent phone mockup; screenshot sits beneath the SVG hardware. */
+
     .phone {
       flex: none;
       position: relative;
@@ -193,7 +212,9 @@
       aspect-ratio: 685 / 1433;
       filter: drop-shadow(0 26px 42px rgba(20, 8, 60, 0.30));
     }
+
     .phone.raise { transform: translateY(-26px); }
+
     .phone img {
       position: absolute;
       top: 1.54%; left: 4.53%;
@@ -205,28 +226,26 @@
       display: block;
       transition: opacity 0.8s ease;
     }
-    .phone::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: url("mockup/iphone17-frame.webp") center / 100% 100% no-repeat;
-      z-index: 2;
-      pointer-events: none;
-    }
 
     /* Foreground phones above the faded background phones */
+
     .hero-visual { position: relative; }
+
     .hero-visual .phone.fg { position: relative; z-index: 1; }
+
     .bg-phone {
       position: absolute;
       z-index: 0;
       opacity: 0.5;
       filter: drop-shadow(0 20px 34px rgba(20, 8, 60, 0.28));
     }
+
     .bg-phone.b1 { width: 188px; top: 2%; right: 2%; transform: rotate(9deg); }
+
     .bg-phone.b2 { width: 158px; bottom: 3%; right: 33%; transform: rotate(-8deg); }
 
     /* Tiled screenshot wall behind the hero phones */
+
     .screen-wall {
       position: absolute;
       inset: 0 -16% 0 8%;
@@ -237,6 +256,7 @@
       -webkit-mask-image: radial-gradient(120% 100% at 50% 40%, #000 55%, transparent 100%);
       mask-image: radial-gradient(120% 100% at 50% 40%, #000 55%, transparent 100%);
     }
+
     .wall-track {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -245,11 +265,14 @@
       align-content: start;
       animation: wallScroll 28s linear infinite;
     }
+
     @keyframes wallScroll {
       from { transform: translateY(-50%); }
       to   { transform: translateY(0); }
     }
+
     @media (prefers-reduced-motion: reduce) { .wall-track { animation: none; } }
+
     .screen-wall img {
       width: 100%;
       aspect-ratio: 9 / 16;
@@ -257,120 +280,175 @@
       object-position: top;
       border-radius: 5px;
     }
+
     /* Staggered (brick) offset — middle column pushed down */
+
     .screen-wall img:nth-child(3n+2) { transform: translateY(42px); }
 
     /* ── Body layout ── */
+
     .detail-layout {
       display: grid; grid-template-columns: 280px 1fr;
       border-bottom: 1px solid var(--line);
       padding-inline: var(--gutter);
     }
+
     .side-index {
       position: sticky; top: 72px; height: calc(100vh - 72px);
       padding: 48px 32px; border-right: 1px solid var(--soft-line); align-self: start;
     }
+
     .side-index h2 { margin: 0 0 32px; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; }
+
     .side-index a {
       display: flex; justify-content: space-between; gap: 16px;
       padding: 13px 0; border-bottom: 1px solid var(--soft-line);
       color: var(--muted); font-size: 13px;
     }
+
     .side-index a:hover em { color: var(--text); }
+
     .side-index span:first-child { font-weight: 700; color: var(--holo-purple); }
+
     .side-index em { font-style: normal; }
 
     .content { padding: 0; }
+
     .section {
       display: grid; grid-template-columns: 200px 1fr; gap: 48px;
       padding: 64px 56px; border-bottom: 1px solid var(--soft-line);
     }
+
     .section:last-child { border-bottom: 0; }
+
     .section-title { margin: 0; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; }
+
     .section-number { display: block; margin-bottom: 12px; color: var(--holo-purple); font-size: 13px; font-weight: 700; }
+
     .section-body h3 {
       margin: 0 0 16px; font-size: clamp(26px, 3.4vw, 46px);
       line-height: 1.08; letter-spacing: -0.04em; word-break: keep-all;
     }
+
     .section-body p { max-width: 780px; margin: 0; color: #333; font-size: 16px; word-break: keep-all; }
+
     .section-body p + p { margin-top: 14px; }
 
     /* Bullet facts */
+
     .facts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); max-width: 780px; }
+
     .facts li {
       display: grid; grid-template-columns: 200px 1fr; gap: 24px;
       padding: 16px 0; border-bottom: 1px solid var(--soft-line);
       font-size: 15px; word-break: keep-all;
     }
+
     .facts li b { color: var(--holo-purple); }
 
     /* Survey stat grid */
+
     .stat-grid {
       display: grid; grid-template-columns: repeat(4, 1fr);
       border-top: 1px solid var(--line); border-left: 1px solid var(--line);
       margin: 6px 0 26px; max-width: 900px;
     }
+
     .stat {
       padding: 22px 20px;
       border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
       background: var(--card);
     }
+
     .stat .num { font-size: clamp(30px, 3.6vw, 46px); font-weight: 900; letter-spacing: -0.03em; color: var(--holo-purple); line-height: 1; }
+
     .stat .lbl { margin-top: 10px; font-size: 13px; color: var(--muted); line-height: 1.45; word-break: keep-all; }
 
     /* Concept */
+
     .concept-board { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
     .concept-card { min-height: 160px; padding: 24px; border: 1px solid var(--line); background: var(--card); }
+
     .concept-card strong { display: block; margin-bottom: 12px; font-size: 20px; }
+
     .concept-card p { font-size: 15px; color: var(--muted); }
 
     /* Palette + chips (design system) */
+
     .palette { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
     .sw { width: 66px; height: 66px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08); }
+
     .chips { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
     .chip {
       padding: 8px 16px; border-radius: 30px; font-size: 13px; font-weight: 700;
       background: var(--holo-lilac); color: var(--holo-deep);
     }
+
     .chip.alt { background: #ffe0ef; color: #c02d78; }
 
     /* Design Point */
+
     .point-list { display: grid; gap: 0; border-top: 1px solid var(--line); }
+
     .point-item {
       display: grid; grid-template-columns: 200px 1fr; gap: 32px;
       padding: 26px 0; border-bottom: 1px solid var(--soft-line);
     }
+
     .point-item strong { font-size: 19px; }
+
     .point-item p { margin: 0; color: var(--muted); font-size: 15px; word-break: keep-all; }
+
     .mine { display: inline-block; margin-left: 8px; padding: 2px 9px; border-radius: 20px;
       background: var(--holo-purple); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; vertical-align: middle; }
 
     /* My Contribution blocks */
+
     .contrib { }
+
     .contrib-item { padding: 30px 0; border-bottom: 1px solid var(--soft-line); }
+
     .contrib-item:last-child { border-bottom: 0; }
+
     .contrib-head { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+
     .contrib-head strong { font-size: 19px; }
+
     .contrib-item > p { margin: 0 0 20px; color: var(--muted); font-size: 15px; max-width: 720px; word-break: keep-all; }
 
     .step { text-align: center; }
+
     .step figcaption { margin-top: 8px; font-size: 11px; color: var(--muted); }
+
     .step .phone { filter: none; }
 
     .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
     .flow .step { width: 104px; }
+
     .flow .step .phone { width: 104px; }
+
     .flow .arrow { color: var(--holo-purple); font-size: 18px; font-weight: 800; }
 
     .mini-screens { display: flex; gap: 18px; flex-wrap: wrap; }
+
     .mini-screens .step { width: 150px; }
+
     .mini-screens .step .phone { width: 150px; }
 
     /* Admin desktop browser mockups */
+
     .admin-shots { display: grid; gap: 20px; max-width: 820px; }
+
     .admin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
     .browser-fig { margin: 0; }
+
     .browser-fig figcaption { margin-top: 9px; font-size: 12.5px; color: var(--muted); word-break: keep-all; }
+
     .browser {
       border: 1px solid var(--soft-line);
       border-radius: 10px;
@@ -378,94 +456,125 @@
       background: #fff;
       box-shadow: 0 16px 34px rgba(20, 8, 60, 0.10);
     }
+
     .browser-bar {
       display: flex; align-items: center; gap: 6px;
       padding: 9px 12px;
       background: #f0efec;
       border-bottom: 1px solid var(--soft-line);
     }
-    .browser-bar .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
-    .browser-bar .r { background: #ff5f57; }
-    .browser-bar .y { background: #febc2e; }
-    .browser-bar .g { background: #28c840; }
+
     .browser-bar .url {
       margin-left: 8px; font-size: 11px; color: var(--muted);
       background: #fff; border: 1px solid var(--soft-line);
       border-radius: 6px; padding: 3px 12px; flex: 1; max-width: 300px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+
     .browser > img { width: 100%; display: block; }
 
     /* Final Output phone grid */
+
     .screens { display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px 18px; }
+
     .screen figure { margin: 0; }
+
     .screen .phone { width: 100%; filter: none; }
+
     .screen figcaption { margin-top: 10px; font-size: 12px; color: var(--muted); text-align: center; letter-spacing: 0.02em; }
 
     /* Review */
+
     .review-box { padding: 36px; border: 1px solid var(--line); background: var(--text); color: var(--bg); }
+
     .review-box p { margin: 0; color: var(--bg); font-size: 21px; line-height: 1.5; font-weight: 700; word-break: keep-all; }
 
     /* Bottom nav */
+
     .bottom-nav { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); padding-inline: var(--gutter); }
+
     .bottom-nav a {
       padding: 34px 48px; border-right: 1px solid var(--line);
       font-size: 17px; font-weight: 800; display: flex; justify-content: space-between; align-items: center;
     }
-    .bottom-nav a:last-child { border-right: 0; }
+
     .bottom-nav a:hover { background: var(--soft); }
-    .bottom-nav .next-label { display: flex; flex-direction: column; gap: 5px; }
-    .bottom-nav .next-label em { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-    .bottom-nav .next-label strong { font-weight: 800; }
 
     /* Design Guide */
+
     .guide { margin-top: 26px; border: 1px solid var(--line); max-width: 900px; }
+
     .guide-row { display: grid; grid-template-columns: 180px 1fr; gap: 26px; padding: 26px; border-top: 1px solid var(--soft-line); background: var(--card); }
-    .guide-row:first-child { border-top: 0; }
+
     .g-label { font-size: 15px; font-weight: 800; color: var(--holo-deep); }
-    .g-label small { display: block; margin-top: 5px; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
+
     .g-body p { margin: 0; font-size: 14.5px; color: #333; line-height: 1.7; word-break: keep-all; }
+
     .g-body .palette, .g-body .chips, .g-body .type-demo { margin-top: 16px; }
+
     .g-body .palette .sw { width: 54px; height: 54px; }
-    .type-demo { display: flex; flex-direction: column; gap: 4px; }
+
     .type-demo .t-logo { font-size: 32px; font-weight: 900; letter-spacing: -0.03em; background: var(--holo-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
     .type-demo .t-title { font-size: 20px; font-weight: 800; }
+
     .type-demo .t-body { font-size: 13.5px; color: var(--muted); }
+
     .radius-demo { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+
     .radius-demo i { display: grid; place-items: center; width: 78px; height: 54px; background: var(--holo-lilac); color: var(--holo-deep); font-size: 11px; font-weight: 800; }
 
     /* Build cards + stack chips */
+
     .build { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; max-width: 900px; }
+
     .build-card { border: 1px solid var(--soft-line); background: var(--card); padding: 22px; }
+
     .build-card h3 { margin: 0 0 8px; font-size: 17px; color: var(--holo-deep); }
+
     .build-card p { margin: 0; color: var(--muted); font-size: 14.5px; word-break: keep-all; }
+
     .stack-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+
     .stack-chips span { border: 1px solid var(--soft-line); color: var(--muted); font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 999px; }
 
     /* Challenges Q&A */
+
     .chall { display: grid; gap: 12px; margin-top: 24px; max-width: 900px; }
+
     .chall-item { border: 1px solid var(--soft-line); background: var(--card); padding: 20px 24px; }
+
     .chall-item .q { margin: 0 0 8px; font-size: 15.5px; font-weight: 800; word-break: keep-all; }
+
     .chall-item .q b { color: var(--holo-purple); font-size: 11px; font-weight: 800; letter-spacing: 0.08em; margin-right: 8px; }
+
     .chall-item .a { margin: 0; font-size: 14.5px; color: var(--muted); word-break: keep-all; line-height: 1.7; }
+
     .chall-item .a b { color: var(--holo-deep); }
 
     /* Retrospective 3-split */
+
     .retro-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 26px; max-width: 900px; }
+
     .retro-card { border: 1px solid var(--soft-line); background: var(--card); padding: 22px; }
+
     .retro-card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 800; color: var(--holo-deep); letter-spacing: 0.02em; }
+
     .retro-card p { margin: 0; font-size: 14px; color: var(--muted); line-height: 1.65; word-break: keep-all; }
 
     @media (max-width: 1000px) {
       .screens { grid-template-columns: repeat(3, 1fr); }
     }
+
     @media (max-width: 780px) {
       .guide-row { grid-template-columns: 1fr; gap: 14px; }
       .build, .retro-grid { grid-template-columns: 1fr; }
     }
+
     @media (max-width: 900px) {
       .nav { padding: 0 20px; }
       .hero, .detail-layout, .section { grid-template-columns: 1fr; }
+      .meta-row { grid-template-columns: 1fr; } .meta-item:nth-child(odd) { padding-right: 0; }
       .hero-text { border-right: 0; padding: 48px 24px; }
       .hero-visual { padding: 24px; }
       .bg-phone, .screen-wall { display: none; }
@@ -480,6 +589,7 @@
     }
 
     /* Scroll to top — 스크롤 중 언제든 맨 위로 */
+
     .to-top {
       position: fixed; right: 24px; bottom: 24px; z-index: 50;
       width: 46px; height: 46px; display: grid; place-items: center;
@@ -488,16 +598,6 @@
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
       opacity: 0; visibility: hidden; transform: translateY(8px);
       transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
-    }
-    .to-top svg { display: block; }
-    .to-top.show { opacity: 1; visibility: visible; transform: none; }
-    .to-top:hover { transform: translateY(-2px); }
-    @media (prefers-reduced-motion: reduce) {
-      .to-top { transition: opacity 0.25s ease, visibility 0.25s; }
-      .to-top:hover { transform: none; }
-    }
-    @media (max-width: 900px) {
-      .to-top { right: 16px; bottom: 16px; width: 42px; height: 42px; }
     }
 
     /* ── Korean typography pass ──
@@ -509,21 +609,26 @@
        evens out heading line lengths. Browsers without text-wrap ignore it and
        render exactly as before. Display headings keep their tight leading —
        Hangul has no descenders, so it does not collide. */
-    .desc, p.lead, .build-card p, .section-body p, .concept-card p,
-    .retro-card p, .chall p, .facts li, .flow-step .ds, .project-desc {
-      line-height: var(--body-lh);
-      text-wrap: pretty;
-    }
+
     /* Size applies to running body copy only — card text and captions keep
        their own smaller scale, which --body-size must not flatten. */
+
     .project-desc { font-size: var(--body-size); }
+
     /* matches the original rules' specificity so these actually win */
+
     .section p.lead { max-width: var(--body-measure); font-size: var(--body-size); }
+
     .section-body p { max-width: var(--body-measure); font-size: var(--body-size); }
-    .title, .project-title, .project-subtitle, .subtitle,
-    .section h2, .section-body h3, .info-title, .cta-band h2 {
-      text-wrap: balance;
-    }
+  
+    /* ── grid.css 공통값 중 팀 페이지 원본과 다른 항목 복원 (0-회귀) ── */
+    img { max-width: none; }
+    .meta-row { margin-top: 0; }
+    .meta-label { font-weight: 400; }
+    .side-index a { font-weight: 400; }
+    .sw { text-align: start; }
+    .guide, .retro-card { border-radius: 0; }
+    .section-body p { line-height: var(--body-lh); }
   </style>
 </head>
 <body>
@@ -531,19 +636,17 @@
     <header class="nav">
       <a class="back" href="index.html#work"><span>←</span><span>JO HYEON CHAE PORTFOLIO</span></a>
       <nav class="nav-links">
-        <a href="#overview">OVERVIEW</a>
-        <span>/</span>
-        <a href="#output">OUTPUT</a>
+        <a href="https://3team-holo.vercel.app" target="_blank" rel="noopener">LIVE ↗</a>
       </nav>
     </header>
 
     <!-- Hero + Project Info share ONE continuous gradient -->
     <div class="grad-stack">
     <section class="hero" id="top">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:56px; top:13%; left:43%; --r:-14deg; animation-delay:0s;">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:32px; top:23%; left:1%; --r:10deg; animation-delay:.9s;">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:38px; top:73%; left:9%; --r:22deg; animation-delay:1.6s;">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:26px; top:60%; left:46%; --r:-8deg; animation-delay:.4s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:56px; top:13%; left:43%; --r:-14deg; animation-delay:0s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:32px; top:23%; left:1%; --r:10deg; animation-delay:.9s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:38px; top:73%; left:9%; --r:22deg; animation-delay:1.6s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:26px; top:60%; left:46%; --r:-8deg; animation-delay:.4s;">
       <div class="hero-text">
         <div>
           <p class="eyebrow">UI·UX Design · 4인 팀 프로젝트</p>
@@ -561,33 +664,33 @@
       <div class="hero-visual">
         <div class="screen-wall" aria-hidden="true">
           <div class="wall-track">
-            <img src="web/holo/home.webp" alt=""><img src="web/holo/map.webp" alt=""><img src="web/holo/board.webp" alt="">
-            <img src="web/holo/chat.png" alt=""><img src="web/holo/mypage.webp" alt=""><img src="web/holo/room.webp" alt="">
-            <img src="web/holo/interest.png" alt=""><img src="web/holo/home.webp" alt=""><img src="web/holo/map.webp" alt="">
-            <img src="web/holo/attendance.png" alt=""><img src="web/holo/chat.png" alt=""><img src="web/holo/mypage.webp" alt="">
-            <img src="web/holo/home.webp" alt=""><img src="web/holo/map.webp" alt=""><img src="web/holo/board.webp" alt="">
-            <img src="web/holo/chat.png" alt=""><img src="web/holo/mypage.webp" alt=""><img src="web/holo/room.webp" alt="">
-            <img src="web/holo/interest.png" alt=""><img src="web/holo/home.webp" alt=""><img src="web/holo/map.webp" alt="">
-            <img src="web/holo/attendance.png" alt=""><img src="web/holo/chat.png" alt=""><img src="web/holo/mypage.webp" alt="">
+            <img src="assets/projects/holo/home.webp" alt=""><img src="assets/projects/holo/map.webp" alt=""><img src="assets/projects/holo/board.webp" alt="">
+            <img src="assets/projects/holo/chat.webp" alt=""><img src="assets/projects/holo/mypage.webp" alt=""><img src="assets/projects/holo/room.webp" alt="">
+            <img src="assets/projects/holo/interest.webp" alt=""><img src="assets/projects/holo/home.webp" alt=""><img src="assets/projects/holo/map.webp" alt="">
+            <img src="assets/projects/holo/attendance.webp" alt=""><img src="assets/projects/holo/chat.webp" alt=""><img src="assets/projects/holo/mypage.webp" alt="">
+            <img src="assets/projects/holo/home.webp" alt=""><img src="assets/projects/holo/map.webp" alt=""><img src="assets/projects/holo/board.webp" alt="">
+            <img src="assets/projects/holo/chat.webp" alt=""><img src="assets/projects/holo/mypage.webp" alt=""><img src="assets/projects/holo/room.webp" alt="">
+            <img src="assets/projects/holo/interest.webp" alt=""><img src="assets/projects/holo/home.webp" alt=""><img src="assets/projects/holo/map.webp" alt="">
+            <img src="assets/projects/holo/attendance.webp" alt=""><img src="assets/projects/holo/chat.webp" alt=""><img src="assets/projects/holo/mypage.webp" alt="">
           </div>
         </div>
-        <div class="phone fg cycle" data-screens="web/holo/home.webp,web/holo/board.webp,web/holo/chat.png,web/holo/map.webp">
-          <img src="web/holo/home.webp" alt="HOLO 화면"><img src="" alt="" style="opacity:0">
+        <div class="phone fg cycle" data-screens="assets/projects/holo/home.webp,assets/projects/holo/board.webp,assets/projects/holo/chat.webp,assets/projects/holo/map.webp">
+          <img src="assets/projects/holo/home.webp" alt="HOLO 화면"><img src="" alt="" style="opacity:0">
         </div>
-        <div class="phone fg cycle raise" data-screens="web/holo/mypage.webp,web/holo/room.webp,web/holo/attendance.png,web/holo/interest.png">
-          <img src="web/holo/mypage.webp" alt="HOLO 화면"><img src="" alt="" style="opacity:0">
+        <div class="phone fg cycle raise" data-screens="assets/projects/holo/mypage.webp,assets/projects/holo/room.webp,assets/projects/holo/attendance.webp,assets/projects/holo/interest.webp">
+          <img src="assets/projects/holo/mypage.webp" alt="HOLO 화면"><img src="" alt="" style="opacity:0">
         </div>
       </div>
     </section>
 
     <!-- Second gradient scene: project info reveals on scroll -->
     <section class="info-scene" data-reveal>
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:70px; top:10%; right:13%; --r:12deg; animation-delay:.2s;">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:34px; top:20%; left:58%; --r:-18deg; animation-delay:1.1s;">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:42px; top:64%; right:9%; --r:-10deg; animation-delay:.7s;">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:28px; top:82%; left:44%; --r:16deg; animation-delay:1.9s;">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:52px; top:22%; left:9%; --r:-12deg; animation-delay:1.3s;">
-      <img class="deco-star" src="web/holo/star.png" alt="" style="width:32px; top:58%; left:6%; --r:18deg; animation-delay:.5s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:70px; top:10%; right:13%; --r:12deg; animation-delay:.2s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:34px; top:20%; left:58%; --r:-18deg; animation-delay:1.1s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:42px; top:64%; right:9%; --r:-10deg; animation-delay:.7s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:28px; top:82%; left:44%; --r:16deg; animation-delay:1.9s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:52px; top:22%; left:9%; --r:-12deg; animation-delay:1.3s;">
+      <img class="deco-star" src="assets/projects/holo/star.webp" alt="" style="width:32px; top:58%; left:6%; --r:18deg; animation-delay:.5s;">
       <div class="info-inner">
         <p class="info-kicker">HOLO · UI·UX Design</p>
         <h2 class="info-title">Project Info</h2>
@@ -611,6 +714,14 @@
           <div class="meta-item">
             <span class="meta-label">Contribution</span>
             <span class="meta-value">개인 참여도 50% · 4인 팀</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Deployment</span>
+            <span class="meta-value">Vercel</span>
+          </div>
+          <div class="meta-item" style="grid-column: 1 / -1;">
+            <span class="meta-label">Main Feature</span>
+            <span class="meta-value">지역 인증 · 게임화 포인트 · 소셜 커뮤니티 · 관리자 백오피스</span>
           </div>
           <div class="meta-item" style="grid-column: 1 / -1;">
             <span class="meta-label">Tools</span>
@@ -775,17 +886,17 @@
                 <div class="contrib-head"><strong>온보딩 플로우</strong><span class="mine">My Part</span></div>
                 <p>스플래시부터 관심사 선택까지, 인증 기반의 안전한 시작과 낮은 진입 장벽을 동시에 잡은 6단계 흐름을 설계하고 구현했습니다.</p>
                 <div class="flow">
-                  <div class="step"><div class="phone"><img src="web/holo/splash.png" alt=""></div><figcaption>Splash</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/splash.webp" alt=""></div><figcaption>Splash</figcaption></div>
                   <div class="arrow">→</div>
-                  <div class="step"><div class="phone"><img src="web/holo/login.png" alt=""></div><figcaption>로그인</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/login.webp" alt=""></div><figcaption>로그인</figcaption></div>
                   <div class="arrow">→</div>
-                  <div class="step"><div class="phone"><img src="web/holo/terms.png" alt=""></div><figcaption>약관 동의</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/terms.webp" alt=""></div><figcaption>약관 동의</figcaption></div>
                   <div class="arrow">→</div>
-                  <div class="step"><div class="phone"><img src="web/holo/verification.png" alt=""></div><figcaption>본인 인증</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/verification.webp" alt=""></div><figcaption>본인 인증</figcaption></div>
                   <div class="arrow">→</div>
-                  <div class="step"><div class="phone"><img src="web/holo/nickname.png" alt=""></div><figcaption>닉네임</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/nickname.webp" alt=""></div><figcaption>닉네임</figcaption></div>
                   <div class="arrow">→</div>
-                  <div class="step"><div class="phone"><img src="web/holo/interest.png" alt=""></div><figcaption>관심사</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/interest.webp" alt=""></div><figcaption>관심사</figcaption></div>
                 </div>
               </div>
 
@@ -793,9 +904,9 @@
                 <div class="contrib-head"><strong>마이페이지 · 게임화</strong><span class="mine">My Part</span></div>
                 <p>레벨·뱃지·칭호 시스템을 구현해 "활동이 곧 보상"으로 보이도록 구성하고, 마이룸 꾸미기·출석 보상으로 지속적인 참여를 유도했습니다.</p>
                 <div class="mini-screens">
-                  <div class="step"><div class="phone"><img src="web/holo/mypage.webp" alt=""></div><figcaption>마이페이지 (레벨·뱃지·칭호)</figcaption></div>
-                  <div class="step"><div class="phone"><img src="web/holo/room.webp" alt=""></div><figcaption>마이룸 꾸미기</figcaption></div>
-                  <div class="step"><div class="phone"><img src="web/holo/attendance.png" alt=""></div><figcaption>출석 보상</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/mypage.webp" alt=""></div><figcaption>마이페이지 (레벨·뱃지·칭호)</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/room.webp" alt=""></div><figcaption>마이룸 꾸미기</figcaption></div>
+                  <div class="step"><div class="phone"><img src="assets/projects/holo/attendance.webp" alt=""></div><figcaption>출석 보상</figcaption></div>
                 </div>
               </div>
 
@@ -806,7 +917,7 @@
                   <figure class="browser-fig">
                     <div class="browser">
                       <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">3team-holo-admin.vercel.app</span></div>
-                      <img src="web/holo/admin/admin-02.webp" alt="HOLO 운영센터 대시보드">
+                      <img src="assets/projects/holo/admin/admin-02.webp" alt="HOLO 운영센터 대시보드">
                     </div>
                     <figcaption>운영 대시보드 — 회원·게시글·신고 현황을 한눈에</figcaption>
                   </figure>
@@ -814,14 +925,14 @@
                     <figure class="browser-fig">
                       <div class="browser">
                         <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">/rewards</span></div>
-                        <img src="web/holo/admin/admin-07.webp" alt="뱃지/레벨 관리">
+                        <img src="assets/projects/holo/admin/admin-07.webp" alt="뱃지/레벨 관리">
                       </div>
                       <figcaption>리워드 운영 — 뱃지·레벨 관리</figcaption>
                     </figure>
                     <figure class="browser-fig">
                       <div class="browser">
                         <div class="browser-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="url">/contents</span></div>
-                        <img src="web/holo/admin/admin-01.webp" alt="콘텐츠 운영">
+                        <img src="assets/projects/holo/admin/admin-01.webp" alt="콘텐츠 운영">
                       </div>
                       <figcaption>콘텐츠 운영 — 이벤트·공지·배너</figcaption>
                     </figure>
@@ -894,16 +1005,16 @@
           <h2 class="section-title"><span class="section-number">09</span>Final Output</h2>
           <div class="section-body">
             <div class="screens">
-              <div class="screen"><figure><div class="phone"><img src="web/holo/splash.png" alt=""></div><figcaption>Splash</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/login.png" alt=""></div><figcaption>Login</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/interest.png" alt=""></div><figcaption>Interest · 온보딩</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/home.webp" alt=""></div><figcaption>Main Home</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/map.webp" alt=""></div><figcaption>Map</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/board.webp" alt=""></div><figcaption>Board</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/chat.png" alt=""></div><figcaption>Chat</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/mypage.webp" alt=""></div><figcaption>My Page · 게임화</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/room.webp" alt=""></div><figcaption>My Room</figcaption></figure></div>
-              <div class="screen"><figure><div class="phone"><img src="web/holo/attendance.png" alt=""></div><figcaption>Attendance</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/splash.webp" alt=""></div><figcaption>Splash</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/login.webp" alt=""></div><figcaption>Login</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/interest.webp" alt=""></div><figcaption>Interest · 온보딩</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/home.webp" alt=""></div><figcaption>Main Home</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/map.webp" alt=""></div><figcaption>Map</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/board.webp" alt=""></div><figcaption>Board</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/chat.webp" alt=""></div><figcaption>Chat</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/mypage.webp" alt=""></div><figcaption>My Page · 게임화</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/room.webp" alt=""></div><figcaption>My Room</figcaption></figure></div>
+              <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/attendance.webp" alt=""></div><figcaption>Attendance</figcaption></figure></div>
             </div>
           </div>
         </section>
@@ -970,20 +1081,8 @@
       });
     })();
 
-    /* 메인 포트폴리오에서 들어왔다면, 뒤로가기 링크가 스크롤 위치를 복원하도록 history.back() 사용
-       → Featured HOLO 패널에서 눌렀으면 정확히 그 자리로 돌아옴 (Work로 떨어지지 않음) */
-    (function () {
-      document.querySelectorAll('a[href^="index.html"]').forEach(function (a) {
-        a.addEventListener('click', function (e) {
-          /* 같은 세션에서 메인(또는 Work)을 거쳐 들어왔으면 뒤로가기로 스크롤 위치 복원.
-             file://은 referrer가 비어 있어 origin 검사가 안 되므로, 히스토리 존재 + 직전이 다른 상세페이지가 아님으로 판별 */
-          if (history.length > 1 && (document.referrer === '' || document.referrer.indexOf('project-') === -1)) {
-            e.preventDefault();
-            history.back();
-          }
-        });
-      });
-    })();
+    /* 뒤로가기 링크는 index.html#work 로 직접 이동 (스크롤 위치 복원은 메인 페이지가 처리).
+       예전엔 history.back()을 썼는데, 사이드 인덱스로 섹션 이동 시 직전 섹션으로 튀는 문제가 있어 제거함. */
   </script>
   <script>
   /* Detail Index scroll-spy — 현재 섹션 목차 항목을 강조색으로 하이라이트 */

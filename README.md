@@ -30,21 +30,27 @@
 ## 구성
 
 ```
-index.html            메인 — About / Featured / Work / Meet me / Contact
-index.js              메인 인터랙션 (갤러리, 스크롤 연출)
-project-*.html        프로젝트 상세 8종
+index.html                     메인 — About / Featured / Work / Meet me / Contact
+project-*.html                 프로젝트 상세 8종
 
-web/<프로젝트>/         프로젝트별 스크린샷·이미지
-banners/              배너 디자인 32종
-graphic/              시각디자인 작업물
-logos/                도구 로고 (SVG)
-mockup/               기기 프레임
-cv/                   이력서
+assets/                        모든 이미지·미디어 (페이지는 루트, 에셋은 여기)
+  css/grid.css                 공용 디자인 그리드 & 반복 컴포넌트 (상세 8종 공유)
+  home/                        메인 전용 (intro 영상·포스터, 프로필)
+  projects/<프로젝트>/           프로젝트별 스크린샷·썸네일(thumb)·패널(panel)
+  banners/                     배너 디자인
+  graphic/                     시각디자인 작업물
+  logos/                       도구 로고 (SVG)
+  mockup/                      기기 프레임
+  cv/                          이력서 (cv.pdf + 페이지 이미지)
+
+_unused/                       현재 미사용 파일 보관 (구버전·미참조 에셋)
 ```
 
-상세 페이지는 각자 `<style>`을 안에 들고 있습니다. 프로젝트마다 브랜드 색과
-레이아웃이 달라 공통 스타일시트로 묶어도 얻는 게 적고, 한 페이지를 고쳐도
-나머지가 영향받지 않는 편이 수정할 때 안전하기 때문입니다.
+상세 8종은 반복되는 레이아웃·컴포넌트(그리드, `.nav`·`.section`·`.meta-row`·
+`.detail-layout`·히어로 목업 등)를 공용 `assets/css/grid.css`에서 공유합니다.
+grid.css는 색·폰트를 각 페이지의 `:root` 테마 변수로 읽으므로, 각 페이지
+`<style>`에는 그 페이지의 테마와 고유 스타일(히어로 배경, 특수 버튼 등)만
+남습니다. 공통 부분은 grid.css 한 곳만 고치면 8개 전부에 반영됩니다.
 
 ---
 
