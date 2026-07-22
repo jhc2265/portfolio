@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>조현채 · Visual / Banner / UI·UX Design Portfolio</title>
+    <title>조현채 · Visual Graphic · Banner · UI·UX Design Portfolio</title>
     <meta name="description" content="조현채 포트폴리오 — 시각그래픽디자인, 배너디자인, UI·UX디자인 작업을 한 웹사이트에 정리한 아카이브입니다.">
     <meta name="author" content="조현채 (Jo Hyeon Chae)">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="조현채 · Visual / Banner / UI·UX Design Portfolio">
+    <meta property="og:title" content="조현채 · Visual Graphic · Banner · UI·UX Design Portfolio">
     <meta property="og:description" content="시각그래픽·배너·UI·UX 디자인 작업을 정리한 조현채의 디자인 포트폴리오.">
     <meta name="twitter:card" content="summary_large_image">
     <style>
@@ -1140,6 +1140,58 @@
         margin-right: 6px;
       }
 
+      .bgrid-item {
+        cursor: zoom-in;
+      }
+
+      /* 전체 보기 그리드에서 배너 클릭 시 원본 확대 */
+      .bgrid-zoom {
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 40px;
+        background: rgba(12, 12, 12, 0.92);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .25s ease, visibility .25s ease;
+        cursor: zoom-out;
+      }
+
+      .bgrid-zoom.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .bgrid-zoom img {
+        display: block;
+        width: auto;
+        height: auto;
+        max-width: 92%;
+        max-height: 82%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .bgrid-zoom-cap {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        font-size: 14px;
+        color: #fff;
+      }
+
+      .bgrid-zoom-cap b {
+        font-weight: 700;
+      }
+
+      .bgrid-zoom-cap span {
+        color: rgba(255, 255, 255, 0.55);
+      }
+
       @media (max-width: 640px) {
         .bgrid-inner {
           grid-template-columns: 1fr;
@@ -1958,7 +2010,7 @@
             <div class="mark">HC</div>
             <div>
               <h1>Hyeonchae<br>Portfolio</h1>
-              <p>Visual Graphic / Banner / UI·UX Design</p>
+              <p>Visual Graphic · Banner · UI·UX</p>
             </div>
           </div>
           <nav class="nav">
@@ -2438,7 +2490,7 @@
                 </div>
                 <div class="profile-text">
                   <h3>조현채</h3>
-                  <p class="role">Visual/Graphic · UI·UX Designer</p>
+                  <p class="role">Visual Graphic · UI·UX Designer</p>
                   <div class="profile-info">
                     <p><span>BIRTH</span>2003.12.15</p>
                     <p><span>PHONE</span>010-8947-2759</p>
@@ -3231,6 +3283,33 @@
         if (bgrid && viewall) {
           var bgInner = bgrid.querySelector('.bgrid-inner');
           var srcs = BANNERS.map(function (b) { return b.src; });
+
+          // 그리드에서 배너를 누르면 원본을 확대해 보여주는 오버레이
+          var bzoom = document.createElement('div');
+          bzoom.className = 'bgrid-zoom';
+          bzoom.setAttribute('aria-hidden', 'true');
+          var bzImg = document.createElement('img');
+          var bzCap = document.createElement('div');
+          bzCap.className = 'bgrid-zoom-cap';
+          var bzB = document.createElement('b');
+          var bzS = document.createElement('span');
+          bzCap.appendChild(bzB); bzCap.appendChild(bzS);
+          bzoom.appendChild(bzImg); bzoom.appendChild(bzCap);
+          bgrid.appendChild(bzoom);
+
+          function bzOpen(full, title, cat) {
+            bzImg.src = full;                 // 확대는 원본
+            bzB.textContent = title || '';
+            bzS.textContent = cat || '';
+            bzoom.classList.add('show');
+            bzoom.setAttribute('aria-hidden', 'false');
+          }
+          function bzClose() {
+            bzoom.classList.remove('show');
+            bzoom.setAttribute('aria-hidden', 'true');
+          }
+          bzoom.addEventListener('click', bzClose);
+
           BANNERS.forEach(function (b, i) {
             var item = document.createElement('div');
             item.className = 'bgrid-item';
@@ -3242,6 +3321,7 @@
             var ss = document.createElement('span'); ss.textContent = b.c;
             cap.appendChild(bb); cap.appendChild(ss);
             item.appendChild(img); item.appendChild(cap);
+            item.addEventListener('click', function () { bzOpen(b.src, b.t, b.c); });
             bgInner.appendChild(item);
           });
 
@@ -3252,6 +3332,7 @@
             bgrid.scrollTop = 0;
           }
           function bgClose() {
+            bzClose();
             bgrid.classList.remove('show');
             bgrid.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
@@ -3261,7 +3342,9 @@
           bgrid.querySelector('.bgrid-close').addEventListener('click', bgClose);
           bgrid.addEventListener('click', function (e) { if (e.target === bgrid) bgClose(); });
           document.addEventListener('keydown', function (e) {
-            if (bgrid.classList.contains('show') && e.key === 'Escape') bgClose();
+            if (e.key !== 'Escape') return;
+            if (bzoom.classList.contains('show')) { bzClose(); return; }
+            if (bgrid.classList.contains('show')) bgClose();
           });
         }
       })();
