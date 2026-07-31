@@ -435,7 +435,7 @@
       .outro-title { margin: 0 0 30px; font-size: clamp(34px, 5vw, 64px); font-weight: 900; line-height: 1.05; letter-spacing: -0.04em; }
       .outro-title em { font-style: normal; color: var(--accent); }
       .outro-arrow { display: grid; place-items: center; width: 62px; height: 62px; border: 1.5px solid var(--ink); border-radius: 50%; font-size: 24px; color: var(--ink); animation: outroBounce 1.8s ease-in-out infinite; transition: background .3s ease, color .3s ease, border-color .3s ease; }
-      @media (hover: hover) { .outro-arrow:hover { background: var(--accent); border-color: var(--accent); color: #fff; } }
+      @media (any-hover: hover) { .outro-arrow:hover { background: var(--accent); border-color: var(--accent); color: #fff; } }
       @keyframes outroBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(9px); } }
       @media (prefers-reduced-motion: reduce) { .outro-arrow { animation: none; } }
 
@@ -582,7 +582,7 @@
       .work-card .work-thumb { flex: none; }   /* 16:9 비율 유지 */
       .work-card .meta { margin-top: auto; }   /* 설명 길이와 무관하게 항상 바닥 */
 
-      /* hover 효과는 아래 @media (hover: hover) 블록에서 일괄 관리 */
+      /* hover 효과는 아래 @media (any-hover: hover) 블록에서 일괄 관리 */
 
       .work-thumb {
         /* [시안 C] 썸네일 테두리 제거 */
@@ -1254,7 +1254,7 @@
         animation-play-state: paused;
       }
 
-      @media (hover: hover) {
+      @media (any-hover: hover) {
         .banner-marquee:hover .marquee-track {
           animation-play-state: paused;
         }
@@ -1336,7 +1336,7 @@
       }
 
       /* 하이브리드: 호버하면 마퀴가 멈추고(위 규칙) 해당 썸네일이 살짝 커져 클릭을 유도 */
-      @media (hover: hover) {
+      @media (any-hover: hover) {
         .banner-item:hover .banner-thumb {
           position: relative;
           z-index: 2;
@@ -1389,7 +1389,7 @@
         display: none;
       }
 
-      @media (hover: none) {
+      @media (any-hover: none) {
         .hint-hover {
           display: none;
         }
@@ -1687,6 +1687,23 @@
         background: var(--white);
       }
 
+      /* Contact 버튼 — 호버(키보드 포커스 포함)하면 안내 문구로 바뀐다.
+         미디어쿼리로 감싸지 않는다: 터치스크린 달린 PC에서 조건이 거짓이 되면 통째로 죽는다. */
+      .contact-links .cl-alt,
+      .mail-copy .mc-done,
+      .mail-copy .mc-ok { display: none; }
+      .contact-links a:hover .cl-label,
+      .contact-links a:focus-visible .cl-label { display: none; }
+      .contact-links a:hover .cl-alt,
+      .contact-links a:focus-visible .cl-alt { display: inline; }
+      /* 복사 직후 표시가 호버 표시를 이기도록 뒤에 둔다 */
+      .mail-copy { cursor: pointer; }
+      .mail-copy.copied .cl-label,
+      .mail-copy.copied .cl-alt,
+      .mail-copy.copied .cl-icon { display: none; }
+      .mail-copy.copied .mc-done,
+      .mail-copy.copied .mc-ok { display: inline; }
+
       @media (max-width: 980px) {
         .shell {
           grid-template-columns: 1fr;
@@ -1898,7 +1915,7 @@
       }
 
       /* 워크카드 호버: 살짝 떠오르고 이미지 확대 */
-      @media (hover: hover) {
+      @media (any-hover: hover) {
         .work-card.is-detail,
         .work-card.is-project {
           transition:
@@ -1975,14 +1992,14 @@
       .fx-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);
         transition:transform .5s cubic-bezier(.2,.7,.3,1),opacity .55s ease-out}
 
-      /* 커서가 켜지면 링크 커서 숨김(우아하게) */
-      @media (hover: hover) and (pointer: fine) {
-        body.cursor-on,
-        body.cursor-on a,
-        body.cursor-on button,
-        body.cursor-on .work-card {
-          cursor: none;
-        }
+      /* 커서가 켜지면 링크 커서 숨김(우아하게).
+         미디어쿼리로 감싸지 않는다 — body.cursor-on 자체를 JS가 실제 마우스 입력을
+         확인한 뒤에만 붙이므로, 그 클래스가 곧 게이트 역할을 한다. */
+      body.cursor-on,
+      body.cursor-on a,
+      body.cursor-on button,
+      body.cursor-on .work-card {
+        cursor: none;
       }
 
       /* 접근성: 모션 최소화 사용자에겐 전부 즉시 표시 */
@@ -2086,7 +2103,7 @@
           .nav a:hover span:first-child{color:var(--ink)}
           .nav a:hover span:last-child,.nav a.active span:last-child{color:var(--accent)}
           .nav a.active span:last-child{font-weight:700}
-          @media (hover:hover){ .nav a:hover::after{width:100%} }
+          @media (any-hover:hover){ .nav a:hover::after{width:100%} }
 
           /* Work 서브 목차 — Work 도달 시 아래로 쭉 펼쳐짐 */
           .subnav{
@@ -2135,7 +2152,7 @@
           .subnav.open a:nth-child(1){ transition-delay:.06s; }
           .subnav.open a:nth-child(2){ transition-delay:.12s; }
           .subnav.open a:nth-child(3){ transition-delay:.18s; }
-          @media (hover:hover){
+          @media (any-hover:hover){
             .subnav a:hover{ color:var(--ink); }
             .subnav a:hover::before{ background:var(--ink); height:2px; }
           }
@@ -2170,7 +2187,7 @@
           @media (prefers-reduced-motion:reduce){ .sweep-title{ transition:none; } }
 
           /* 인포카드 호버: 테두리·제목선·번호가 버밀리언으로 켜짐 */
-          @media (hover:hover){
+          @media (any-hover:hover){
             .info-card{ transition:transform .4s cubic-bezier(.16,.84,.44,1), background .4s ease, border-color .3s ease; }
             .info-card:hover{ border-color:var(--accent); }
             .info-card:hover h3{ border-bottom-color:var(--accent); }
@@ -2197,7 +2214,8 @@
           .contact h2{ transition:transform .85s cubic-bezier(.16,.84,.44,1), opacity .85s ease; }
           .contact-links a{ background:transparent; border-color:var(--ink); color:var(--ink); transition:transform .5s cubic-bezier(.34,1.5,.5,1), border-color .55s ease, color .55s ease, background .3s ease, padding-left .3s ease; }
           .contact.lit .contact-links a{ border-color:#fff; color:#fff; }
-          @media (hover:hover){ .contact.lit .contact-links a:hover{ background:#fff; color:var(--accent); } }
+          /* 미디어쿼리로 감싸지 않는다 — 감싸면 일부 환경에서 통째로 죽는다 */
+          .contact.lit .contact-links a:hover{ background:#fff; color:var(--accent); }
           /* 등장: JS가 contact-armed 부여 → 아래 숨김 / .lit이면 솟아오름 + 링크 순차 */
           .clink{ transition:transform .7s cubic-bezier(.16,.84,.44,1), opacity .7s ease; }
           .contact.contact-armed h2{ opacity:0; transform:translateY(42px); }
@@ -2505,8 +2523,8 @@
                 <ul class="dated">
                   <li><span class="yr">2026</span><span>그린컴퓨터아카데미 수강 (2026.02~07)</span></li>
                   <li><span class="yr">2024</span><span>강남대학교 유니버셜아트디자인 편입</span></li>
-                  <li><span class="yr">2022</span><span>시각디자인과 입학</span></li>
-                  <li><span class="yr">2019</span><span>고등학교 입학</span></li>
+                  <li><span class="yr">2022</span><span>백석예술대학교 시각디자인과 입학</span></li>
+                  <li><span class="yr">2019</span><span>분당영덕여자고등학교 입학</span></li>
                 </ul>
               </article>
               <article class="info-card" data-motion="info-card">
@@ -2981,15 +2999,17 @@
             <div class="work-grid">
               <button class="lab-item" type="button"
                 data-title="Dimension Tool" data-tag="Web Tool"
-                data-desc="이미지에 치수를 입력하고 표기하는 웹 도구예요. 일러스트레이터 2023에는 치수 표기 기능이 없어, 필요해서 직접 만들었습니다."
+                data-demo="https://jhc2265.github.io/dimension-tool/dimension.html"
+                data-desc="이미지에 치수를 입력하고 표기하는 웹 도구예요. 일러스트레이터 2023에는 치수 표기 기능이 없어, 필요해서 직접 만들었습니다. 라이브러리 없이 HTML 파일 하나로 만들었습니다."
                 data-images="assets/making/dimension-tool/01.webp,assets/making/dimension-tool/02.webp,assets/making/dimension-tool/03.webp,assets/making/dimension-tool/04.webp">
                 <div class="lab-top"><span class="lab-name">Dimension Tool</span><span class="lab-tag">Web Tool</span></div>
                 <span class="lab-mini">이미지 치수 표기 도구</span>
               </button>
               <button class="lab-item" type="button"
                 data-title="PetChat" data-tag="Desktop"
-                data-desc="상대의 펫을 내 바탕화면에 띄우고 말풍선으로 대화하는 데스크톱 프로그램이에요. 코드를 주고받아 연결하면 서로의 펫이 화면에 나타납니다. Electron·WebSocket으로 만들었습니다."
-                data-note="Windows 데스크톱에서 실행하는 프로그램입니다.">
+                data-desc="상대의 펫을 내 바탕화면에 띄우고 말풍선으로 대화하는 데스크톱 프로그램이에요. 코드를 주고받으면 서로의 펫이 나타납니다. Electron·WebSocket으로 만들고, 두 컴퓨터를 잇는 서버는 Render에 올렸습니다."
+                data-note="Windows 데스크톱에서 실행하는 프로그램입니다."
+                data-images="assets/making/petchat/01.webp,assets/making/petchat/02.webp,assets/making/petchat/03.webp">
                 <div class="lab-top"><span class="lab-name">PetChat</span><span class="lab-tag">Desktop</span></div>
                 <span class="lab-mini">바탕화면 펫 채팅 앱</span>
               </button>
@@ -3002,25 +3022,27 @@
                 <span class="lab-mini">앱·사이트 통합 런처</span>
               </button>
               <button class="lab-item" type="button"
-                data-title="Hlog" data-tag="App"
-                data-desc="칼로리 계산 없이 걸음·식사·활동을 가볍게 기록하는 개인 식단 트래킹 앱이에요."
-                data-note="개인용으로 만들어 쓰고 있는 앱입니다.">
-                <div class="lab-top"><span class="lab-name">Hlog</span><span class="lab-tag">App</span></div>
-                <span class="lab-mini">가벼운 식단·활동 기록</span>
+                data-title="Ssakssak" data-tag="Batch"
+                data-desc="일반적인 방법으로 지워지지 않는 파일·폴더를 강제로 삭제하는 도구예요. 파일을 붙잡은 프로그램을 종료하거나 재부팅 예약으로 지웁니다. 배치 파일(.bat)로 만들었습니다."
+                data-note="더블클릭으로 실행하는 Windows 배치(.bat) 파일입니다."
+                data-images="assets/making/ssakssak/01.webp,assets/making/ssakssak/02.webp,assets/making/ssakssak/03.webp,assets/making/ssakssak/04.webp">
+                <div class="lab-top"><span class="lab-name">Ssakssak</span><span class="lab-tag">Batch</span></div>
+                <span class="lab-mini">파일·폴더 강제 삭제 도구</span>
               </button>
               <button class="lab-item" type="button"
-                data-title="Desktop_Hider" data-tag="Desktop"
-                data-desc="필요할 때 바탕화면의 파일과 폴더를 한 번에 숨기고 다시 보이게 하는 프로그램이에요."
-                data-note="Windows 데스크톱에서 실행하는 프로그램입니다.">
-                <div class="lab-top"><span class="lab-name">Desktop_Hider</span><span class="lab-tag">Desktop</span></div>
-                <span class="lab-mini">바탕화면 파일 숨김</span>
+                data-title="GitHub Push Tool" data-tag="Batch"
+                data-desc="바꾼 파일을 고르고 메시지만 적으면 커밋과 푸시를 한 번에 끝내주는 도구예요. 매번 같은 명령어를 치는 게 번거로워 배치 파일(.bat)로 직접 만들었습니다."
+                data-note="더블클릭으로 실행하는 Windows 배치(.bat) 파일입니다."
+                data-images="assets/making/github-push-tool/01.webp,assets/making/github-push-tool/02.webp,assets/making/github-push-tool/03.webp,assets/making/github-push-tool/04.webp">
+                <div class="lab-top"><span class="lab-name">GitHub Push Tool</span><span class="lab-tag">Batch</span></div>
+                <span class="lab-mini">커밋·푸시 한 번에</span>
               </button>
               <button class="lab-item" type="button"
-                data-title="Font Batch Installer" data-tag="Desktop"
-                data-desc="폴더 안의 여러 폰트를 한 번에 일괄 설치해 주는 프로그램이에요."
+                data-title="Font Installer" data-tag="Desktop"
+                data-desc="폴더 안의 여러 폰트를 한 번에 일괄 설치해 주는 프로그램이에요. 파이썬으로 만들었습니다."
                 data-note="Windows 데스크톱에서 실행하는 프로그램입니다."
-                data-images="assets/making/font-batch-installer/01.webp">
-                <div class="lab-top"><span class="lab-name">Font Batch Installer</span><span class="lab-tag">Desktop</span></div>
+                data-images="assets/making/font-installer/01.webp,assets/making/font-installer/02.webp,assets/making/font-installer/03.webp,assets/making/font-installer/04.webp">
+                <div class="lab-top"><span class="lab-name">Font Installer</span><span class="lab-tag">Desktop</span></div>
                 <span class="lab-mini">폰트 일괄 설치</span>
               </button>
             </div>
@@ -3042,7 +3064,7 @@
           .lab-item .lab-name { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
           .lab-item .lab-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.02em; color: #5B3B9E; background: #ece7f6; padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
           .lab-item .lab-mini { font-size: 13px; color: var(--muted); line-height: 1.5; }
-          @media (hover: hover) {
+          @media (any-hover: hover) {
             .lab-item:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(10, 10, 10, 0.09); }
           }
 
@@ -3064,25 +3086,62 @@
             background: var(--soft); color: var(--ink); font-size: 15px; cursor: pointer; line-height: 1;
             transition: background .15s ease;
           }
-          @media (hover: hover) { .lab-card .lab-close:hover { background: #e3e3de; } }
+          @media (any-hover: hover) { .lab-card .lab-close:hover { background: #e3e3de; } }
           .lab-card .lab-card-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #5B3B9E; background: #ece7f6; padding: 5px 11px; border-radius: 999px; }
           .lab-card .lab-card-title { margin: 16px 0 12px; font-size: 28px; font-weight: 900; letter-spacing: -0.03em; color: var(--ink); }
           .lab-card .lab-card-desc { margin: 0; font-size: 15px; line-height: 1.7; color: #3a3a3a; word-break: keep-all; }
           .lab-card .lab-card-demo { display: none; align-items: center; gap: 7px; margin-top: 24px; padding: 12px 20px; background: #5B3B9E; color: #fff; border-radius: 999px; font-size: 14px; font-weight: 800; width: max-content; transition: transform .15s ease; }
           .lab-card .lab-card-demo.on { display: inline-flex; }
-          @media (hover: hover) { .lab-card .lab-card-demo:hover { transform: translateY(-2px); } }
+          @media (any-hover: hover) { .lab-card .lab-card-demo:hover { transform: translateY(-2px); } }
           .lab-card .lab-card-note { display: none; margin: 22px 0 0; font-size: 12.5px; color: var(--muted); }
           .lab-card .lab-card-note.on { display: block; }
-          .lab-card.has-shots { width: min(900px, 100%); display: flex; gap: 26px; align-items: center; padding: 52px 34px 34px; }
+          .lab-card.has-shots { width: min(900px, 100%); display: flex; gap: 26px; align-items: center; padding: 52px 34px; }
           .lab-card.has-shots .lab-card-main { flex: 0 0 300px; }
           .lab-card-shots { display: none; }
-          .lab-card.has-shots .lab-card-shots { display: block; flex: 1; align-self: center; }
-          .lab-shots-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; border: 1px solid rgba(10, 10, 10, 0.10); background: #f0f0ee; }
+          .lab-card.has-shots .lab-card-shots { display: block; flex: 1; align-self: center; position: relative; }
+          /* aspect-ratio는 스크린샷 실제 비율(1.84~1.86)에 맞춤 — 16/9로 두면 위아래에 배경이 비친다 */
+          .lab-shots-frame { position: relative; width: 100%; aspect-ratio: 1.85; border-radius: 10px; overflow: hidden; border: 1px solid rgba(10, 10, 10, 0.10); background: #fff; cursor: zoom-in; }
           .lab-shots-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity .5s ease; }
           .lab-shots-frame img.on { opacity: 1; }
-          .lab-shots-dots { display: flex; justify-content: center; gap: 7px; margin-top: 12px; }
+          .lab-shots-dots { position: absolute; left: 0; right: 0; top: 100%; display: flex; justify-content: center; gap: 7px; margin-top: 12px; }
           .lab-shots-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; background: rgba(10, 10, 10, 0.18); cursor: pointer; transition: background .2s ease, transform .2s ease; }
           .lab-shots-dots button.on { background: #5B3B9E; transform: scale(1.25); }
+
+          /* LAB 스크린샷 클릭 시 원본 확대 */
+          .lab-zoom {
+            position: fixed; inset: 0; z-index: 1300;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 14px; padding: 48px;
+            background: rgba(12, 12, 12, 0.92);
+            opacity: 0; visibility: hidden;
+            transition: opacity .25s ease, visibility .25s ease;
+            cursor: zoom-out;
+          }
+          .lab-zoom.show { opacity: 1; visibility: visible; }
+          .lab-zoom img { display: block; width: auto; height: auto; max-width: 92%; max-height: 82%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+          .lab-zoom-cap { display: flex; align-items: baseline; gap: 12px; font-size: 14px; color: #fff; }
+          .lab-zoom-cap span { color: rgba(255, 255, 255, 0.55); }
+          .lab-zoom-close {
+            position: absolute; top: 20px; right: 22px; width: 38px; height: 38px;
+            display: grid; place-items: center; padding: 0;
+            border: 0; border-radius: 50%; cursor: pointer;
+            background: rgba(255, 255, 255, 0.12); color: #fff; font-size: 15px;
+            transition: background .2s ease;
+          }
+          .lab-zoom-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 44px; height: 44px; display: none; place-items: center; padding: 0 0 4px;
+            border: 0; border-radius: 50%; cursor: pointer;
+            background: rgba(255, 255, 255, 0.12); color: #fff; font-size: 26px; line-height: 1;
+            transition: background .2s ease;
+          }
+          .lab-zoom.multi .lab-zoom-nav { display: grid; }
+          .lab-zoom-nav[data-d="prev"] { left: 18px; }
+          .lab-zoom-nav[data-d="next"] { right: 18px; }
+          @media (any-hover: hover) {
+            .lab-zoom-close:hover, .lab-zoom-nav:hover { background: rgba(255, 255, 255, 0.24); }
+          }
+
           @media (max-width: 720px) {
             .lab-card.has-shots { flex-direction: column; width: min(460px, 100%); padding: 34px 30px 30px; }
             .lab-card.has-shots .lab-card-main { flex: none; }
@@ -3106,9 +3165,9 @@
         <section class="contact" id="contact">
           <h2>Let’s build<br>the next page.</h2>
           <div class="contact-links">
-            <div class="clink"><a id="cv-open" href="assets/cv/cv.pdf" target="_blank" rel="noopener"><span>CV</span><span>↗</span></a></div>
-            <div class="clink"><a href="mailto:jhc2265@gmail.com"><span>Email</span><span>↗</span></a></div>
-            <div class="clink"><a href="https://github.com/jhc2265" target="_blank" rel="noopener"><span>GitHub</span><span>↗</span></a></div>
+            <div class="clink"><a id="cv-open" href="assets/cv/cv.pdf" target="_blank" rel="noopener" data-cursor="이력서 보러가기"><span>CV</span><span>↗</span></a></div>
+            <div class="clink"><a class="mail-copy" href="mailto:jhc2265@gmail.com" data-email="jhc2265@gmail.com" data-cursor="눌러서 복사" aria-label="이메일 주소 jhc2265@gmail.com 복사하기"><span class="cl-label">Email</span><span class="cl-alt">jhc2265@gmail.com</span><span class="mc-done">복사됐어요</span><span class="cl-icon">↗</span><span class="mc-ok">✓</span></a></div>
+            <div class="clink"><a href="https://github.com/jhc2265" target="_blank" rel="noopener" data-cursor="깃허브 열기"><span>GitHub</span><span>↗</span></a></div>
           </div>
         </section>
       </main>
@@ -3147,6 +3206,13 @@
         </div>
         <div class="lab-card-shots"></div>
       </div>
+    </div>
+    <div class="lab-zoom" aria-hidden="true" role="dialog" aria-modal="true">
+      <button class="lab-zoom-close" type="button" aria-label="닫기">✕</button>
+      <button class="lab-zoom-nav" type="button" data-d="prev" aria-label="이전 이미지">‹</button>
+      <button class="lab-zoom-nav" type="button" data-d="next" aria-label="다음 이미지">›</button>
+      <img alt="">
+      <div class="lab-zoom-cap"><b></b><span></span></div>
     </div>
     <script>
       (function () {
@@ -3233,7 +3299,7 @@
         var openAt = 0;
         var suppressUntil = 0;
         var current = null;
-        var canHover = !window.matchMedia || window.matchMedia('(hover: hover)').matches;
+        var canHover = !window.matchMedia || window.matchMedia('(any-hover: hover)').matches;
 
         function show(it) {
           var img = it.querySelector('img');
@@ -3462,6 +3528,11 @@
         var cardEl = modal.querySelector('.lab-card');
         var shotsEl = modal.querySelector('.lab-card-shots');
         var slideTimer = null;
+        var curImgs = [];
+        var curTitle = '';
+        var curIdx = 0;
+        var slideGo = null;      // buildSlides 내부 go(n)을 밖에서도 쓰기 위해
+        var slideRestart = null; // 자동 넘김 재시작
         function stopSlides() { if (slideTimer) { clearInterval(slideTimer); slideTimer = null; } }
         function buildSlides(imgs, title) {
           shotsEl.innerHTML = '';
@@ -3492,11 +3563,65 @@
           var idx = 0;
           function go(n) {
             idx = (n + imgs.length) % imgs.length;
+            curIdx = idx;
             imEls.forEach(function (e, i) { e.classList.toggle('on', i === idx); });
             dotEls.forEach(function (e, i) { e.classList.toggle('on', i === idx); });
           }
           function restart() { stopSlides(); if (imgs.length > 1) slideTimer = setInterval(function () { go(idx + 1); }, 2600); }
+          curImgs = imgs.map(function (s) { return s.trim(); });
+          curTitle = title;
+          curIdx = 0;
+          slideGo = go;
+          slideRestart = restart;
+          frame.addEventListener('click', function () { zoomOpen(idx); });
           restart();
+        }
+
+        /* 스크린샷 확대 보기 */
+        var zoomEl = document.querySelector('.lab-zoom');
+        var zoomImg = zoomEl && zoomEl.querySelector('img');
+        var zoomCapB = zoomEl && zoomEl.querySelector('.lab-zoom-cap b');
+        var zoomCapS = zoomEl && zoomEl.querySelector('.lab-zoom-cap span');
+        function zoomRender() {
+          if (!zoomEl || !curImgs.length) return;
+          zoomImg.src = curImgs[curIdx];
+          zoomImg.alt = curTitle + ' 스크린샷 ' + (curIdx + 1);
+          zoomCapB.textContent = curTitle;
+          zoomCapS.textContent = (curIdx + 1) + ' / ' + curImgs.length;
+        }
+        function zoomOpen(i) {
+          if (!zoomEl || !curImgs.length) return;
+          stopSlides();                    // 확대 중에는 자동 넘김 정지
+          curIdx = i || 0;
+          zoomRender();
+          zoomEl.classList.toggle('multi', curImgs.length > 1);
+          zoomEl.classList.add('show');
+          zoomEl.setAttribute('aria-hidden', 'false');
+        }
+        function zoomClose() {
+          if (!zoomEl) return;
+          zoomEl.classList.remove('show');
+          zoomEl.setAttribute('aria-hidden', 'true');
+          if (modal.classList.contains('show') && slideRestart) slideRestart();
+        }
+        function zoomStep(d) {
+          if (!curImgs.length) return;
+          var n = (curIdx + d + curImgs.length) % curImgs.length;
+          if (slideGo) slideGo(n); else curIdx = n;
+          curIdx = n;
+          zoomRender();
+        }
+        if (zoomEl) {
+          // 배경/이미지 아무 데나 누르면 닫힘, 화살표는 제외
+          zoomEl.addEventListener('click', function (e) {
+            if (e.target.closest('.lab-zoom-nav')) return;
+            zoomClose();
+          });
+          zoomEl.querySelectorAll('.lab-zoom-nav').forEach(function (b) {
+            b.addEventListener('click', function () {
+              zoomStep(b.getAttribute('data-d') === 'next' ? 1 : -1);
+            });
+          });
         }
 
         function openModal(btn) {
@@ -3517,6 +3642,8 @@
           } else {
             shotsEl.innerHTML = '';
             cardEl.classList.remove('has-shots');
+            curImgs = []; curTitle = ''; curIdx = 0;
+            slideGo = null; slideRestart = null;
           }
           modal.classList.add('show');
           modal.setAttribute('aria-hidden', 'false');
@@ -3524,6 +3651,7 @@
         }
         function closeModal() {
           stopSlides();
+          if (zoomEl) { zoomEl.classList.remove('show'); zoomEl.setAttribute('aria-hidden', 'true'); }
           modal.classList.remove('show');
           modal.setAttribute('aria-hidden', 'true');
           document.body.style.overflow = '';
@@ -3535,7 +3663,47 @@
         modal.querySelector('.lab-close').addEventListener('click', closeModal);
         modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
         document.addEventListener('keydown', function (e) {
-          if (modal.classList.contains('show') && e.key === 'Escape') closeModal();
+          if (!modal.classList.contains('show')) return;
+          var zoomed = zoomEl && zoomEl.classList.contains('show');
+          if (e.key === 'Escape') { if (zoomed) zoomClose(); else closeModal(); }
+          else if (zoomed && e.key === 'ArrowLeft') zoomStep(-1);
+          else if (zoomed && e.key === 'ArrowRight') zoomStep(1);
+        });
+      })();
+
+      // Contact — Email 클릭 시 주소를 클립보드로 복사
+      (function () {
+        var el = document.querySelector('.mail-copy');
+        if (!el) return;
+        var addr = el.getAttribute('data-email') || '';
+        var timer = null;
+        function flash() {
+          el.classList.add('copied');
+          clearTimeout(timer);
+          timer = setTimeout(function () { el.classList.remove('copied'); }, 1600);
+        }
+        // clipboard API는 https에서만 동작 — file:// 로 열었을 때를 위한 대비책
+        function fallbackCopy(text) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;top:-1000px;opacity:0;';
+          document.body.appendChild(ta);
+          ta.select();
+          var ok = false;
+          try { ok = document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta);
+          return ok;
+        }
+        el.addEventListener('click', function (e) {
+          e.preventDefault();          // mailto 대신 복사. href는 우클릭·JS 실패 대비로 남겨둔다
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(addr).then(flash, function () {
+              if (fallbackCopy(addr)) flash();
+            });
+          } else if (fallbackCopy(addr)) {
+            flash();
+          }
         });
       })();
 
@@ -3819,10 +3987,8 @@
         }
 
         /* ---------- 6. 워크카드 호버 틸트 ---------- */
-        var canHoverFine =
-          window.matchMedia &&
-          window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-        if (canHoverFine && !reduce) {
+        /* 틸트는 mousemove로만 동작하므로 미디어쿼리 게이트가 따로 필요 없다 */
+        if (!reduce) {
           document
             .querySelectorAll('.work-card.is-detail, .work-card.is-project')
             .forEach(function (card) {
@@ -3844,7 +4010,17 @@
         }
 
         /* ---------- 7. 커스텀 커서 (크로스헤어+라벨+별+파티클) ---------- */
-        if (canHoverFine && !reduce) {
+        /* 미디어쿼리(any-hover/any-pointer)는 기기·브라우저에 따라 어긋나게 나오는 경우가 있어
+           게이트로 쓰지 않는다. 실제 마우스 입력이 한 번 들어오면 그때 켠다 —
+           터치로만 쓰는 기기에서는 mouse 타입 이벤트가 없으므로 영영 켜지지 않는다. */
+        if (!reduce) {
+          window.addEventListener('pointermove', function (e) {
+            if (e.pointerType === 'mouse') initCursor();
+          }, { passive: true });
+          window.addEventListener('mousemove', function () { initCursor(); }, { passive: true });
+        }
+        function initCursor() {
+          if (reduce || document.querySelector('.cur')) return;   // 한 번만
           var cross = document.createElement('div');
           cross.className = 'cur c-cross show';
           cross.innerHTML = '<span class="d d1"></span><span class="d d2"></span>';
