@@ -268,17 +268,8 @@
         align-items: center;
         padding: 48px 34px 80px;
       }
-      .intro-video video {
-        display: block;
-        width: 100%;
-        aspect-ratio: 1600 / 740;
-        object-fit: cover;
-        background: #0a0a0a;
-        border: 1px solid var(--ink);
-      }
-      .intro-aside {
-        align-self: center;
-      }
+      .intro-left { min-width: 0; }   /* 영상 + 클립 줄이 왼쪽 칸을 함께 쓴다 */
+      .intro-aside { align-self: center; }
       .intro-quote {
         margin: 0 0 20px;
         font-size: clamp(22px, 2.3vw, 34px);
@@ -299,6 +290,86 @@
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--accent);
+      }
+      /* Meet me — 자기소개 영상이 주인공, 클립 4개는 곁들임.
+         크기 차이로 위계를 만든다: 클립 줄은 460px까지만. */
+      .intro-main {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1600 / 740;
+        object-fit: cover;
+        background: #0a0a0a;
+        border: 1px solid var(--ink);
+      }
+      .meet-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        max-width: 460px;
+        margin-top: 18px;
+      }
+      .mclip { margin: 0; cursor: zoom-in; }
+      .mclip-media {
+        overflow: hidden;
+        border: 1px solid var(--ink);
+        background: #0a0a0a;
+      }
+      .mclip-media video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.16, 0.84, 0.44, 1);
+      }
+      .mclip:hover .mclip-media video { transform: scale(1.06); }
+      /* uppercase를 걸지 않는다 — "작업ing"의 소문자를 살려야 한다 */
+      .mclip figcaption {
+        margin-top: 8px;
+        font-size: 10.5px;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+      }
+      /* 등장: 오른쪽에서 차례로 스르륵 */
+      .mclip {
+        opacity: 0;
+        transform: translateX(28px);
+        transition: transform 0.66s cubic-bezier(0.16, 0.84, 0.44, 1), opacity 0.66s ease;
+      }
+      .meet-strip.in .mclip { opacity: 1; transform: none; }
+      .meet-strip.in .mclip:nth-child(2) { transition-delay: 0.07s; }
+      .meet-strip.in .mclip:nth-child(3) { transition-delay: 0.14s; }
+      .meet-strip.in .mclip:nth-child(4) { transition-delay: 0.21s; }
+
+      /* 클립 클릭 시 크게 보기 */
+      .clip-zoom {
+        position: fixed;
+        inset: 0;
+        z-index: 1300;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 48px;
+        background: rgba(12, 12, 12, 0.92);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+        cursor: zoom-out;
+      }
+      .clip-zoom.show { opacity: 1; visibility: visible; }
+      .clip-zoom video {
+        display: block;
+        max-width: 92%;
+        max-height: 82%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+      .clip-zoom-cap { font-size: 13px; letter-spacing: 0.08em; color: #fff; }
+      @media (max-width: 980px) {
+        .meet-strip { max-width: none; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mclip { opacity: 1; transform: none; transition: none; }
       }
 
       /* Featured (대표작) */
@@ -3150,10 +3221,30 @@
         <section id="intro" class="intro">
           <div class="section-head">
             <h2 class="sweep-title">Meet me</h2>
-            <p>1분 42초, 제가 어떤 사람인지 짧게 담은 자기소개 영상입니다. 편하게 재생해 주세요.</p>
+            <p>1분 42초, 제가 어떤 사람인지 짧게 담은 자기소개 영상입니다. 아래 작은 장면들은 작업하고 발표하는 순간이에요.</p>
           </div>
           <div class="intro-video">
-            <video src="assets/home/intro.mp4" poster="assets/home/intro-poster.webp" controls preload="none" playsinline></video>
+            <div class="intro-left">
+            <video class="intro-main" src="assets/home/intro.mp4" poster="assets/home/intro-poster.webp" controls preload="none" playsinline></video>
+            <div class="meet-strip">
+              <figure class="mclip" data-cap="작업ing">
+                <div class="mclip-media"><video src="assets/home/meet/01-work.mp4" poster="assets/home/meet/01-work.webp" muted loop playsinline preload="none" aria-label="작업하는 모습"></video></div>
+                <figcaption>작업ing</figcaption>
+              </figure>
+              <figure class="mclip" data-cap="결과물 회의">
+                <div class="mclip-media"><video src="assets/home/meet/02-review.mp4" poster="assets/home/meet/02-review.webp" muted loop playsinline preload="none" aria-label="화면으로 작업을 확인하는 모습"></video></div>
+                <figcaption>결과물 회의</figcaption>
+              </figure>
+              <figure class="mclip" data-cap="수업 발표">
+                <div class="mclip-media"><video src="assets/home/meet/03-talk-class.mp4" poster="assets/home/meet/03-talk-class.webp" muted loop playsinline preload="none" aria-label="수업 프로젝트 발표 장면"></video></div>
+                <figcaption>수업 발표</figcaption>
+              </figure>
+              <figure class="mclip" data-cap="HOLO 발표">
+                <div class="mclip-media"><video src="assets/home/meet/04-talk-holo.mp4" poster="assets/home/meet/04-talk-holo.webp" muted loop playsinline preload="none" aria-label="HOLO 프로젝트 발표 장면"></video></div>
+                <figcaption>HOLO 발표</figcaption>
+              </figure>
+            </div>
+            </div>
             <aside class="intro-aside">
               <p class="intro-quote">“예술과 일상을 하루하루<br>수확해 나가는 농부.”</p>
               <p class="intro-note">화면 밖의 저는 이런 사람이에요. 고양이 알람으로 하루를 시작하고, 맛있는 걸 먹으며 수다 떠는 시간을 좋아합니다.</p>
@@ -3206,6 +3297,10 @@
         </div>
         <div class="lab-card-shots"></div>
       </div>
+    </div>
+    <div class="clip-zoom" aria-hidden="true" role="dialog" aria-modal="true">
+      <video muted loop playsinline preload="none"></video>
+      <div class="clip-zoom-cap"></div>
     </div>
     <div class="lab-zoom" aria-hidden="true" role="dialog" aria-modal="true">
       <button class="lab-zoom-close" type="button" aria-label="닫기">✕</button>
@@ -3705,6 +3800,73 @@
             flash();
           }
         });
+      })();
+
+      // Meet me 클립 줄 — 차례로 등장, 보일 때만 재생, 누르면 크게 보기
+      (function () {
+        var strip = document.querySelector('.meet-strip');
+        if (!strip) return;
+        var clips = [].slice.call(strip.querySelectorAll('.mclip'));
+        var reduce = window.matchMedia &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        var zoom = document.querySelector('.clip-zoom');
+        var zVid = zoom && zoom.querySelector('video');
+        var zCap = zoom && zoom.querySelector('.clip-zoom-cap');
+        function zoomOpen(clip) {
+          if (!zoom) return;
+          var v = clip.querySelector('video');
+          zVid.src = v.getAttribute('src');
+          zVid.poster = v.getAttribute('poster') || '';
+          zCap.textContent = clip.getAttribute('data-cap') || '';
+          zoom.classList.add('show');
+          zoom.setAttribute('aria-hidden', 'false');
+          zVid.muted = true;
+          var p = zVid.play();
+          if (p && p.catch) p.catch(function () {});
+        }
+        function zoomClose() {
+          if (!zoom) return;
+          zoom.classList.remove('show');
+          zoom.setAttribute('aria-hidden', 'true');
+          zVid.pause();
+        }
+        if (zoom) {
+          zoom.addEventListener('click', zoomClose);
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && zoom.classList.contains('show')) zoomClose();
+          });
+        }
+        clips.forEach(function (c) {
+          c.addEventListener('click', function () { zoomOpen(c); });
+        });
+
+        if (reduce || !('IntersectionObserver' in window)) {
+          strip.classList.add('in');
+          return;                                   // 모션 최소화: 등장도 재생도 하지 않는다
+        }
+        new IntersectionObserver(function (es, obs) {
+          es.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            strip.classList.add('in');
+            obs.disconnect();                       // 등장은 한 번만
+          });
+        }, { threshold: 0.25 }).observe(strip);
+
+        // preload="none"이라 화면에 들어오기 전엔 받아오지도 않는다
+        var playObs = new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            var v = e.target;
+            if (e.isIntersecting) {
+              v.muted = true;                       // 사파리는 속성만으론 자동재생을 막는다
+              var p = v.play();
+              if (p && p.catch) p.catch(function () {});
+            } else {
+              v.pause();
+            }
+          });
+        }, { threshold: 0.4 });
+        strip.querySelectorAll('video').forEach(function (v) { playObs.observe(v); });
       })();
 
       /* ============================================================

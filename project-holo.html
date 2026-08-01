@@ -489,6 +489,12 @@
 
     .review-box p { margin: 0; color: var(--bg); font-size: 21px; line-height: 1.5; font-weight: 700; word-break: keep-all; }
 
+    /* 발표 영상 */
+
+    .talk-video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #0a0a0a; border: 1px solid var(--line); }
+
+    .talk-meta { margin: 12px 0 0; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
     /* Bottom nav */
 
     .bottom-nav { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); padding-inline: var(--gutter); }
@@ -745,6 +751,7 @@
         <a href="#challenges"><span>07</span><em>Challenges</em></a>
         <a href="#results"><span>08</span><em>Results</em></a>
         <a href="#output"><span>09</span><em>Final Output</em></a>
+        <a href="#talk"><span>10</span><em>Presentation</em></a>
         <a href="#review"><span>—</span><em>Review</em></a>
       </aside>
 
@@ -1016,6 +1023,16 @@
               <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/room.webp" alt=""></div><figcaption>My Room</figcaption></figure></div>
               <div class="screen"><figure><div class="phone"><img src="assets/projects/holo/attendance.webp" alt=""></div><figcaption>Attendance</figcaption></figure></div>
             </div>
+          </div>
+        </section>
+
+        <section class="section" id="talk">
+          <h2 class="section-title"><span class="section-number">10</span>Presentation</h2>
+          <div class="section-body">
+            <h3>발표 영상</h3>
+            <p>팀 프로젝트 최종 발표입니다. 제가 맡은 마이페이지·온보딩·관리자 페이지를 중심으로 설명합니다.</p>
+            <video class="talk-video" src="assets/projects/holo/talk.mp4" poster="assets/projects/holo/talk-poster.webp" controls preload="none" playsinline></video>
+            <p class="talk-meta">2분 41초 · 소리를 켜고 봐주세요 ▶</p>
           </div>
         </section>
 
