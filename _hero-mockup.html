@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>히어로 여백 시안 — 추상 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+/* ===== 본편(index.html)에서 그대로 가져온 토큰·레이아웃 ===== */
+:root{
+  color-scheme:light;
+  --ink:#0a0a0a; --muted:#6b6b6b; --line:#d8d8d8;
+  --paper:#f7f7f4; --white:#fff; --soft:#eeeeea;
+  --c1:#F0532E; --accent:#F0532E;
+  font-family:Inter,"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+
+.shell{display:grid;grid-template-columns:240px minmax(0,1fr);
+  border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.sidebar{padding:28px 24px;background:rgba(247,247,244,.92);
+  display:flex;flex-direction:column;justify-content:space-between}
+.brand{display:grid;gap:18px}
+.mark{width:54px;height:54px;border:1px solid var(--ink);display:grid;place-items:center;
+  font-size:13px;font-weight:800;letter-spacing:.02em}
+.brand h1{margin:0;font-size:18px;line-height:1.15;letter-spacing:-.01em}
+.brand p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.nav{display:grid;gap:10px;margin-top:38px}
+.nav a{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);
+  padding:12px 0;font-size:15.5px;font-weight:600}
+.nav a.on span:last-child{color:var(--c1)}
+.main{min-width:0}
+
+.hero{min-height:calc(100vh - 58px);display:grid;grid-template-rows:1fr auto;position:relative;overflow:hidden}
+.hero-inner{padding:52px 34px 36px;display:grid;align-content:space-between;gap:34px;position:relative;z-index:2}
+.hb-top{display:flex;justify-content:space-between;align-items:flex-start;width:100%}
+.kicker{display:inline-flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+.kicker::before{content:"";width:42px;height:2px;background:var(--accent)}
+.hb-star{font-size:22px;line-height:1;color:var(--c1);display:inline-block;
+  transform-origin:50% 50%;animation:hb-spin 9s linear infinite}
+@keyframes hb-spin{to{transform:rotate(360deg)}}
+.display{margin:0;font-size:clamp(54px,6.8vw,98px);line-height:.88;
+  letter-spacing:-.06em;font-weight:900;white-space:nowrap}
+.display .ac{color:var(--c1)}
+.hero-grid{display:grid;border-top:1px solid var(--line);position:relative;z-index:2;background:var(--paper)}
+.stats{padding:28px 34px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.stat strong{display:block;font-size:30px;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:6px;color:var(--muted);font-size:12px}
+@media (max-width:980px){.display{white-space:normal}}
+
+/* ===== 시안 전환 툴바 (확인용) ===== */
+.bar{position:sticky;top:0;z-index:99;height:58px;display:flex;align-items:center;gap:14px;
+  padding:0 20px;background:var(--ink);color:#fff}
+.bar b{font-size:12px;letter-spacing:.14em;opacity:.55;font-weight:600;white-space:nowrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{appearance:none;border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;
+  font:inherit;font-size:12.5px;font-weight:700;letter-spacing:.04em;padding:7px 13px;
+  border-radius:999px;cursor:pointer;white-space:nowrap}
+.tabs button[aria-pressed="true"]{background:var(--c1);border-color:var(--c1)}
+.note{font-size:12.5px;color:rgba(255,255,255,.62);margin-left:auto;text-align:right;line-height:1.4}
+
+.v{display:none}
+[data-v="a"] .v-a,[data-v="b"] .v-b,[data-v="d"] .v-d,
+[data-v="h"] .v-h,[data-v="i"] .v-i,[data-v="j"] .v-j,
+[data-v="hd"] .v-hd{display:block}
+
+/* 히어로 가운데 행 */
+.hb-mid{justify-self:end;align-self:center}
+
+/* ---------- A. 정보 스택 ---------- */
+.hmeta{margin:0;width:320px;border-top:1px solid var(--ink)}
+.hmeta .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:11px 0;border-bottom:1px solid var(--line)}
+.hmeta dt{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.hmeta dd{margin:0;font-size:13.5px;font-weight:600;letter-spacing:-.01em;
+  display:inline-flex;align-items:center;gap:7px}
+.hmeta .dot{width:7px;height:7px;border-radius:50%;background:var(--c1);
+  box-shadow:0 0 0 0 rgba(240,83,46,.55);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(240,83,46,0)}100%{box-shadow:0 0 0 0 rgba(240,83,46,0)}}
+.hmeta.scroll{margin-top:14px;text-align:right;font-size:10.5px;letter-spacing:.16em;color:var(--muted)}
+.hmeta.scroll i{display:inline-block;font-style:normal;animation:nudge 1.8s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateY(4px)}}
+
+/* ---------- B. 배경 워터마크 + 그리드 ---------- */
+.hb-bg{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-grid{position:absolute;inset:0;
+  background-image:linear-gradient(to right,rgba(10,10,10,.06) 0 1px,transparent 1px);
+  background-size:calc(100% / 12) 100%}
+.bg-type{position:absolute;right:-2.5%;top:-1%;font-family:"Archivo Black",Inter,sans-serif;
+  font-size:clamp(200px,26vw,420px);line-height:.78;letter-spacing:-.045em;
+  color:transparent;-webkit-text-stroke:1.6px rgba(10,10,10,.14);user-select:none}
+.bg-type em{font-style:normal;-webkit-text-stroke-color:rgba(240,83,46,.42)}
+
+/* ---------- 공통: sealray ✳ ---------- */
+.sr{position:relative;display:block;width:100%;height:100%}
+.sr i{position:absolute;left:50%;top:50%;width:50%;height:2px;margin-top:-1px;
+  background:var(--accent);border-radius:2px;transform-origin:0 50%}
+
+/* ---------- D+. ✳ 근접 반응 (이동 없음 · 제자리 반응) ---------- */
+.hb-prox{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.px{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);
+  margin-left:calc(var(--s) / -2);margin-top:calc(var(--s) / -2);
+  opacity:var(--o);transform:scale(1);
+  transition:transform .45s cubic-bezier(.2,.9,.3,1),opacity .45s ease}
+.px .sr{animation:px-spin var(--t) linear infinite}
+.px.dot{border-radius:50%;background:var(--c1)}
+@keyframes px-spin{to{rotate:360deg}}
+.px-hint{position:absolute;right:34px;top:50%;transform:translateY(-50%);
+  writing-mode:vertical-rl;font-size:10.5px;letter-spacing:.18em;color:var(--muted)}
+
+/* ---------- H. 타이포 큐브 ---------- */
+.cube-wrap{width:300px;height:280px;perspective:1000px;display:grid;place-items:center}
+.cube-tilt{width:190px;height:190px;transform-style:preserve-3d;
+  transition:transform 1s cubic-bezier(.2,.8,.3,1)}
+.cube{position:relative;width:100%;height:100%;transform-style:preserve-3d;
+  animation:cube-spin 28s linear infinite}
+@keyframes cube-spin{to{transform:rotateX(360deg) rotateY(720deg)}}
+.cube figure{position:absolute;inset:0;margin:0;display:grid;place-items:center;
+  background:var(--white);border:1px solid var(--ink);
+  font-family:"Archivo Black",Inter,sans-serif;font-size:44px;letter-spacing:-.03em;line-height:1}
+.cube figure.hot{background:var(--c1);color:#fff;border-color:var(--c1)}
+.cube figure.hot .sr{width:64px;height:64px}
+.cube figure.hot .sr i{background:#fff}
+.cube .f1{transform:translateZ(95px)}
+.cube .f2{transform:rotateY(180deg) translateZ(95px)}
+.cube .f3{transform:rotateY(90deg) translateZ(95px)}
+.cube .f4{transform:rotateY(-90deg) translateZ(95px)}
+.cube .f5{transform:rotateX(90deg) translateZ(95px)}
+.cube .f6{transform:rotateX(-90deg) translateZ(95px)}
+.cube-cap{margin-top:20px;text-align:center;font-size:10.5px;letter-spacing:.18em;color:var(--muted)}
+
+/* ---------- I. 자이로 링 ---------- */
+.gyro-wrap{width:320px;height:300px;perspective:900px;display:grid;place-items:center}
+.gyro-tilt{width:240px;height:240px;transform-style:preserve-3d;
+  transition:transform 1s cubic-bezier(.2,.8,.3,1)}
+.ring{position:absolute;inset:0;border:1px solid rgba(10,10,10,.34);border-radius:50%;
+  transform-style:preserve-3d}
+.ring.r1{animation:ring1 19s linear infinite}
+.ring.r2{inset:24px;animation:ring2 26s linear infinite;border-color:rgba(240,83,46,.55)}
+.ring.r3{inset:52px;animation:ring3 15s linear infinite}
+@keyframes ring1{from{transform:rotateX(72deg) rotateZ(0)}   to{transform:rotateX(72deg) rotateZ(360deg)}}
+@keyframes ring2{from{transform:rotateY(74deg) rotateZ(0)}   to{transform:rotateY(74deg) rotateZ(-360deg)}}
+@keyframes ring3{from{transform:rotateX(28deg) rotateY(42deg) rotateZ(0)} to{transform:rotateX(28deg) rotateY(42deg) rotateZ(360deg)}}
+.ring .bead{position:absolute;left:50%;top:-5px;width:10px;height:10px;margin-left:-5px;
+  border-radius:50%;background:var(--c1)}
+.ring.r3 .bead{background:var(--ink);width:7px;height:7px;margin-left:-3.5px;top:-3.5px}
+.gyro-core{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px}
+.gyro-core .sr{animation:px-spin 11s linear infinite}
+.gyro-cap{margin-top:18px;text-align:center;font-size:10.5px;letter-spacing:.18em;color:var(--muted)}
+
+/* ---------- J. ✳ 3D 성좌 ---------- */
+.consto{position:absolute;right:4%;top:32%;width:460px;height:420px;margin-top:-210px;
+  perspective:1000px;z-index:1;pointer-events:none}
+.consto-in{position:absolute;inset:0;transform-style:preserve-3d;
+  animation:consto-turn 44s linear infinite;transition:none}
+@keyframes consto-turn{to{rotate:y 360deg}}
+.cs{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);
+  margin-left:calc(var(--s) / -2);margin-top:calc(var(--s) / -2);opacity:var(--o)}
+.cs .sr{animation:px-spin var(--t) linear infinite}
+.cs.dot{border-radius:50%;background:var(--c1)}
+
+@media (prefers-reduced-motion:reduce){
+  .hb-star,.hmeta .dot,.hmeta.scroll i,.cube,.ring,.consto-in,.px .sr,.cs .sr,.gyro-core .sr{animation:none}
+  .px{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <b>히어로 여백 시안</b>
+  <div class="tabs">
+    <button data-t="hd" aria-pressed="true">★ HD · H + D+ 통합</button>
+    <button data-t="a" aria-pressed="false">A · 정보 스택</button>
+    <button data-t="b" aria-pressed="false">B · 배경 워터마크</button>
+    <button data-t="d" aria-pressed="false">D+ · ✳ 근접 반응</button>
+    <button data-t="h" aria-pressed="false">H · 타이포 큐브</button>
+    <button data-t="i" aria-pressed="false">I · 자이로 링</button>
+    <button data-t="j" aria-pressed="false">J · ✳ 3D 성좌</button>
+  </div>
+  <p class="note" id="note"></p>
+</div>
+
+<div class="shell" data-v="hd" id="stage">
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="mark">HC</div>
+        <div>
+          <h1>Hyeonchae<br>Portfolio</h1>
+          <p>UI·UX Design &amp; Build<br>AI/AX · Banner · Visual Graphic</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a class="on"><span>About</span><span>01</span></a>
+        <a><span>AI/AX</span><span>02</span></a>
+        <a><span>Featured</span><span>03</span></a>
+        <a><span>Work</span><span>04</span></a>
+        <a><span>Meet me</span><span>05</span></a>
+        <a><span>Contact</span><span>06</span></a>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="main">
+    <section class="hero" id="hero">
+
+      <!-- B: 배경 레이어 -->
+      <div class="hb-bg v v-b" aria-hidden="true">
+        <div class="bg-grid"></div>
+        <div class="bg-type">20<em>26</em></div>
+      </div>
+
+      <!-- D+: 근접 반응 레이어 (JS가 채움) -->
+      <div class="hb-prox v v-d" id="proxLayer" aria-hidden="true">
+        <p class="px-hint">MOVE YOUR CURSOR</p>
+      </div>
+
+      <!-- HD: 통합 — ✳ 필드가 배경, 큐브가 전경 (JS가 채움) -->
+      <div class="hb-prox v v-hd" id="proxHdLayer" aria-hidden="true"></div>
+
+      <!-- J: 3D 성좌 레이어 (JS가 채움) -->
+      <div class="consto v v-j" id="constoLayer" aria-hidden="true">
+        <div class="consto-in" id="constoIn"></div>
+      </div>
+
+      <div class="hero-inner">
+        <div class="hb-top">
+          <span class="kicker">UI·UX DESIGNER · DESIGN TO BUILD</span>
+          <span class="hb-star" aria-hidden="true">✳</span>
+        </div>
+
+        <!-- A: 정보 스택 -->
+        <div class="hb-mid v v-a">
+          <dl class="hmeta">
+            <div class="row"><dt>Location</dt><dd>Seoul, KR</dd></div>
+            <div class="row"><dt>Focus</dt><dd>UI·UX / AI·AX</dd></div>
+            <div class="row"><dt>Status</dt><dd><i class="dot"></i>Available 2026</dd></div>
+            <div class="row"><dt>Archive</dt><dd>09 Web · 33 Banner</dd></div>
+          </dl>
+          <p class="hmeta scroll">SCROLL <i>↓</i></p>
+        </div>
+
+        <!-- H: 타이포 큐브 (HD 통합 시안에서도 같은 요소를 쓴다) -->
+        <div class="hb-mid v v-h v-hd">
+          <div class="cube-wrap">
+            <div class="cube-tilt" id="cubeTilt">
+              <div class="cube">
+                <figure class="f1">UI</figure>
+                <figure class="f2">UX</figure>
+                <figure class="f3">AI</figure>
+                <figure class="f4">AX</figure>
+                <figure class="f5 hot"><span class="sr" id="cubeStar"></span></figure>
+                <figure class="f6">HC</figure>
+              </div>
+            </div>
+          </div>
+          <p class="cube-cap">DESIGN &nbsp;·&nbsp; TO &nbsp;·&nbsp; BUILD</p>
+        </div>
+
+        <!-- I: 자이로 링 -->
+        <div class="hb-mid v v-i">
+          <div class="gyro-wrap">
+            <div class="gyro-tilt" id="gyroTilt">
+              <div class="ring r1"><i class="bead"></i></div>
+              <div class="ring r2"><i class="bead"></i></div>
+              <div class="ring r3"><i class="bead"></i></div>
+              <div class="gyro-core"><span class="sr" id="gyroStar"></span></div>
+            </div>
+          </div>
+          <p class="gyro-cap">STRUCTURE IN MOTION</p>
+        </div>
+
+        <h2 class="display">Designing user <span class="ac">behavior</span><br>with visual order.</h2>
+      </div>
+
+      <div class="hero-grid">
+        <div class="stats">
+          <div class="stat"><strong>03</strong><span>Main categories</span></div>
+          <div class="stat"><strong>33</strong><span>Banner works</span></div>
+          <div class="stat"><strong>09</strong><span>Web projects</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+/* ✳ 광선 8개 생성 — About 착지 마크와 같은 형태 */
+function rays(el){
+  for (var a = 0; a < 360; a += 45){
+    var i = document.createElement('i');
+    i.style.transform = 'rotate(' + a + 'deg)';
+    el.appendChild(i);
+  }
+  return el;
+}
+function star(cls, s, o, t){
+  var w = document.createElement('span');
+  w.className = cls;
+  w.style.setProperty('--s', s + 'px');
+  w.style.setProperty('--o', o);
+  w.style.setProperty('--t', t + 's');
+  w.appendChild(rays(Object.assign(document.createElement('span'), {className:'sr'})));
+  return w;
+}
+rays(document.getElementById('cubeStar'));
+rays(document.getElementById('gyroStar'));
+
+/* ===== D+ : 제자리 근접 반응 =====
+   커서를 따라 이동하지 않는다. 커서와의 거리로 각 요소가 개별적으로 커지고 진해질 뿐. */
+var PROX = [
+  ['star', 62, 26, .30, 15], ['star', 34, 44, .22, 11], ['star', 46, 50, .26, 19],
+  ['star', 78, 18, .24, 13], ['star', 86, 46, .30, 17], ['star', 70, 54, .20, 21],
+  ['star', 94, 30, .22, 12], ['star', 56, 40, .18,  9],
+  ['dot',  66, 14, .22,  0], ['dot',  88, 56, .18,  0], ['dot',  52, 52, .20,  0],
+  ['dot',  76, 36, .24,  0], ['dot',  96, 58, .16,  0], ['dot',  60, 48, .18,  0]
+];
+var proxLayer = document.getElementById('proxLayer'), prox = [];
+PROX.forEach(function(p){
+  var isDot = p[0] === 'dot', size = isDot ? 9 : (18 + (p[4] % 5) * 7);
+  var el;
+  if (isDot){
+    el = document.createElement('span');
+    el.className = 'px dot';
+    el.style.setProperty('--s', size + 'px');
+    el.style.setProperty('--o', p[3]);
+  } else {
+    el = star('px', size, p[3], p[4]);
+  }
+  el.style.setProperty('--x', p[1] + '%');
+  el.style.setProperty('--y', p[2] + '%');
+  el.dataset.o = p[3];
+  proxLayer.appendChild(el);
+  prox.push(el);
+});
+
+/* ===== HD : H + D+ 통합 =====
+   큐브가 차지하는 영역(대략 x 73~97% · y 18~50%)을 비워두고 그 왼쪽·아래로 ✳ 필드를 깐다.
+   기본 불투명도를 D+ 단독보다 낮춰서, 커서가 닿기 전까지는 큐브가 주인공으로 남는다.
+   좌표는 % 고정이 아니라 0~1 정규값이다. 화면이 좁아지면 고정 폭인 큐브가 차지하는 비율이
+   커져서 % 좌표로는 별이 큐브 뒤로 말려 들어간다. 그래서 큐브와 헤드라인을 실측해
+   '빈 구역'을 구하고 그 안에 다시 배치한다. L=큐브 왼쪽 벌판, B=큐브 아래. */
+var PROX_HD = [
+  /* [type, zone, u, v, size, 기본 opacity, 회전주기s] */
+  ['star','L', .18, .12, 30, .18, 15], ['star','L', .52, .44, 22, .14, 11],
+  ['star','L', .02, .70, 26, .16, 19], ['star','L', .74, .02, 18, .13, 13],
+  ['star','L', .62, .82, 34, .20, 17], ['star','L', .93, .32, 24, .17, 21],
+  ['star','L', .26, .36, 16, .12,  9], ['star','L', .99, .68, 20, .15, 12],
+  ['star','B', .72, .55, 26, .16, 16],
+  ['dot', 'L', .38, .22,  7, .16,  0], ['dot', 'L', .80, .58,  6, .14,  0],
+  ['dot', 'L', .12, .42,  8, .18,  0], ['dot', 'L', .86, .14,  5, .12,  0],
+  ['dot', 'L', .56, .66,  6, .15,  0], ['dot', 'L', .00, .26,  7, .13,  0],
+  ['dot', 'B', .28, .80,  6, .14,  0]
+];
+var proxHdLayer = document.getElementById('proxHdLayer'), hdItems = [];
+PROX_HD.forEach(function(p){
+  var el;
+  if (p[0] === 'dot'){
+    el = document.createElement('span');
+    el.className = 'px dot';
+    el.style.setProperty('--s', p[4] + 'px');
+    el.style.setProperty('--o', p[5]);
+  } else {
+    el = star('px', p[4], p[5], p[6]);
+  }
+  el.dataset.o = p[5];
+  proxHdLayer.appendChild(el);
+  hdItems.push({el:el, zone:p[1], u:p[2], v:p[3]});
+  prox.push(el);                 /* 커서 반응 대상에 합류 — 숨겨진 동안엔 거리가 멀어 반응하지 않는다 */
+});
+
+function layoutHd(){
+  var heroR = document.getElementById('hero').getBoundingClientRect(),
+      cubeR = document.querySelector('.cube-wrap').getBoundingClientRect(),
+      headR = document.querySelector('.display').getBoundingClientRect();
+  if (!cubeR.width) return;                        /* HD 탭이 아닐 땐 측정 불가 — 건너뛴다 */
+  var floor = headR.top - heroR.top - 46,          /* 헤드라인 위 안전선 */
+      zone = {
+        L:[heroR.width * .26, cubeR.left - heroR.left - 40, 76, floor],
+        B:[cubeR.left - heroR.left + 16, cubeR.right - heroR.left - 16, cubeR.bottom - heroR.top + 26, floor]
+      };
+  hdItems.forEach(function(it){
+    var z = zone[it.zone];
+    if (z[1] <= z[0] || z[3] <= z[2]){ it.el.style.display = 'none'; return; }
+    it.el.style.display = '';
+    it.el.style.setProperty('--x', (z[0] + it.u * (z[1] - z[0])).toFixed(1) + 'px');
+    it.el.style.setProperty('--y', (z[2] + it.v * (z[3] - z[2])).toFixed(1) + 'px');
+  });
+}
+addEventListener('resize', layoutHd);
+
+/* ===== J : 3D 성좌 — 스스로 자전한다. 커서는 기울기만 아주 살짝. ===== */
+var CONSTO = [
+  [ -150, -120,  120, 54, .95, 14], [   40, -150,  -80, 30, .55, 18],
+  [  160,  -40,   60, 44, .85, 11], [  -60,   30,  180, 36, .75, 16],
+  [  120,  120, -140, 26, .45, 21], [ -180,  110,  -40, 22, .40, 13],
+  [   10,   60,  -10, 32, .60,  9], [  180,  180,  100, 18, .35, 24]
+];
+var constoIn = document.getElementById('constoIn');
+CONSTO.forEach(function(c){
+  var el = star('cs', c[3], c[4], c[5]);
+  el.style.transform = 'translate3d(' + c[0] + 'px,' + c[1] + 'px,' + c[2] + 'px)';
+  constoIn.appendChild(el);
+});
+[[-100, 160, 40, 7], [90, -90, 150, 6], [-40, -60, -120, 5], [150, 60, -60, 6]].forEach(function(d){
+  var el = document.createElement('span');
+  el.className = 'cs dot';
+  el.style.setProperty('--s', d[3] + 'px');
+  el.style.setProperty('--o', .5);
+  el.style.transform = 'translate3d(' + d[0] + 'px,' + d[1] + 'px,' + d[2] + 'px)';
+  constoIn.appendChild(el);
+});
+
+/* ===== 커서 반응 — 회전/스케일만. 어떤 시안도 덩어리째 평행이동하지 않는다. ===== */
+var hero = document.getElementById('hero'),
+    cubeTilt = document.getElementById('cubeTilt'),
+    gyroTilt = document.getElementById('gyroTilt'),
+    constoLayer = document.getElementById('constoLayer'),
+    R = 240;                                   /* 근접 반응 반경(px) */
+
+hero.addEventListener('mousemove', function(e){
+  var r = hero.getBoundingClientRect(),
+      nx = (e.clientX - r.left) / r.width - .5,
+      ny = (e.clientY - r.top) / r.height - .5;
+
+  cubeTilt.style.transform = 'rotateY(' + (nx * 30).toFixed(1) + 'deg) rotateX(' + (ny * -22).toFixed(1) + 'deg)';
+  gyroTilt.style.transform = 'rotateY(' + (nx * 24).toFixed(1) + 'deg) rotateX(' + (ny * -18).toFixed(1) + 'deg)';
+  constoLayer.style.perspectiveOrigin = (50 + nx * 30).toFixed(1) + '% ' + (50 + ny * 30).toFixed(1) + '%';
+
+  prox.forEach(function(el){
+    var b = el.getBoundingClientRect(),
+        dx = e.clientX - (b.left + b.width / 2),
+        dy = e.clientY - (b.top + b.height / 2),
+        d = Math.sqrt(dx * dx + dy * dy),
+        k = Math.max(0, 1 - d / R);            /* 가까울수록 1 */
+    el.style.transform = 'scale(' + (1 + k * 1.15).toFixed(3) + ')';
+    el.style.opacity = (+el.dataset.o + k * (1 - el.dataset.o)).toFixed(3);
+  });
+});
+hero.addEventListener('mouseleave', function(){
+  cubeTilt.style.transform = '';
+  gyroTilt.style.transform = '';
+  constoLayer.style.perspectiveOrigin = '';
+  prox.forEach(function(el){ el.style.transform = ''; el.style.opacity = ''; });
+});
+
+/* ===== 시안 전환 ===== */
+var NOTES = {
+  hd:'큐브(전경) + ✳ 필드(배경) · 커서 하나가 큐브는 회전, 별은 제자리 확대로 각각 반응',
+  a:'타이포만으로 채움 · 기존 미니멀 톤 유지 · 구현 난도 낮음',
+  b:'배경 레이어 · 콘텐츠 추가 없이 화면 밀도만 상승',
+  d:'✳가 제자리에 고정 · 커서 근처만 개별로 커지고 진해짐 (이동 없음)',
+  h:'F의 추상 버전 · 6면에 UI/UX/AI/AX/HC/✳ · 자전 + 커서로 각도',
+  i:'세 개의 링이 각각 다른 축으로 자전 · 커서는 기울기만',
+  j:'✳가 3D 공간에 흩어져 스스로 자전 · 커서는 소실점만 이동'
+};
+var stage = document.getElementById('stage'), note = document.getElementById('note');
+note.textContent = NOTES.hd;
+document.querySelectorAll('.tabs button').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('.tabs button').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+    b.setAttribute('aria-pressed','true');
+    stage.dataset.v = b.dataset.t;
+    note.textContent = NOTES[b.dataset.t];
+    if (b.dataset.t === 'hd') layoutHd();     /* 큐브가 보이는 상태에서만 실측이 된다 */
+  });
+});
+layoutHd();
+</script>
+</body>
+</html>

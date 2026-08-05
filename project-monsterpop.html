@@ -167,11 +167,41 @@
 
     /* Problem / Goal */
 
-    .pg-cell { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 16px 18px; font-size: 14.5px; color: #3c3350; word-break: keep-all; }
+    .pg-intro { max-width: 680px; margin: -2px 0 28px; color: var(--muted); font-size: 15px; line-height: 1.75; word-break: keep-all; }
 
-    .pg-cell.g { color: var(--accent-2); font-weight: 700; border-color: #ddd0f7; }
+    .pg-grid { display: grid; gap: 14px; }
+
+    .pg-pair {
+      position: relative; display: grid; grid-template-columns: 1fr 56px 1.08fr;
+      align-items: stretch; overflow: hidden; border: 1px solid var(--line);
+      border-radius: 18px; background: rgba(255,255,255,.72);
+      box-shadow: 0 12px 30px rgba(55,29,104,.055);
+    }
+
+    .pg-pair::before { content: attr(data-step); position: absolute; right: 20px; top: 14px; color: rgba(74,29,150,.055); font-size: 46px; line-height: 1; font-weight: 900; letter-spacing: -.06em; }
+
+    .pg-cell { position: relative; z-index: 1; padding: 24px 26px 26px; color: #514966; font-size: 14.5px; line-height: 1.72; word-break: keep-all; }
+
+    .pg-cell.g { background: linear-gradient(135deg, rgba(123,63,242,.08), rgba(123,63,242,.025)); color: var(--accent-2); font-weight: 700; }
+
+    .pg-tag { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 10px; color: var(--muted); font-size: 11px; line-height: 1; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+
+    .pg-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #b8aecb; }
 
     .pg-cell.g .pg-tag { color: var(--accent); }
+
+    .pg-cell.g .pg-tag::before { background: var(--accent); box-shadow: 0 0 0 4px rgba(123,63,242,.1); }
+
+    .pg-arrow { position: relative; z-index: 2; display: grid; place-items: center; align-self: center; width: 34px; height: 34px; margin: 0 auto; border: 1px solid #ddd1f6; border-radius: 50%; background: #fff; color: var(--accent); font-size: 17px; font-weight: 800; box-shadow: 0 5px 14px rgba(74,29,150,.12); }
+
+    @media (max-width: 720px) {
+      .pg-intro { margin-bottom: 22px; }
+      .pg-pair { grid-template-columns: 1fr; }
+      .pg-cell { padding: 22px 20px 26px; }
+      .pg-cell:first-child { padding-bottom: 38px; }
+      .pg-arrow { position: absolute; left: 20px; top: calc(50% - 17px); transform: rotate(90deg); }
+      .pg-pair::before { right: 16px; top: 12px; font-size: 40px; }
+    }
 
     /* Design Guide */
 
@@ -388,13 +418,23 @@
       <h2 class="section-title"><span class="section-number">02</span>Problem &amp; Goal</h2>
       <div class="section-body">
       <h3>가볍게 들어와서, 다시 돌아오게</h3>
+      <p class="pg-intro">짧고 즉각적인 플레이의 장점은 살리되, 웹 게임에서 이탈을 만드는 세 가지 순간을 다시 찾고 싶은 경험으로 전환했습니다.</p>
       <div class="pg-grid">
-        <div class="pg-cell"><b class="pg-tag">문제 01</b><br>모바일 게임에는 설치라는 문턱이 있습니다. 한 번 해볼까 싶은 마음이 다운로드 화면에서 대부분 꺾입니다.</div>
-        <div class="pg-cell g"><b class="pg-tag">목표 01</b><br>설치 없이 링크로 접속하고, 로그인 뒤 곧장 사냥할 수 있게 합니다. 운영 점검용 체험 모드는 서버 기록과 분리합니다.</div>
-        <div class="pg-cell"><b class="pg-tag">문제 02</b><br>짧은 게임은 한 번 하고 닫으면 그만입니다. 다시 열 이유가 없습니다.</div>
-        <div class="pg-cell g"><b class="pg-tag">목표 02</b><br>랭킹&#183;도감&#183;레벨&#183;일일 미션&#183;보스 스트릭으로 <b>내일 다시 올 이유</b>를 만듭니다.</div>
-        <div class="pg-cell"><b class="pg-tag">문제 03</b><br>웹 게임은 첫 로딩이 길면 그대로 이탈합니다.</div>
-        <div class="pg-cell g"><b class="pg-tag">목표 03</b><br>첫 화면에 필요한 것만 받아오도록 폰트와 이미지를 쪼갭니다.</div>
+        <article class="pg-pair" data-step="01">
+          <div class="pg-cell"><b class="pg-tag">Problem 01</b><br>모바일 게임에는 설치라는 문턱이 있습니다. 한 번 해볼까 싶은 마음이 다운로드 화면에서 대부분 꺾입니다.</div>
+          <span class="pg-arrow" aria-hidden="true">&#8594;</span>
+          <div class="pg-cell g"><b class="pg-tag">Goal 01</b><br>설치 없이 링크로 접속하고, 로그인 뒤 곧장 사냥할 수 있게 합니다. 운영 점검용 체험 모드는 서버 기록과 분리합니다.</div>
+        </article>
+        <article class="pg-pair" data-step="02">
+          <div class="pg-cell"><b class="pg-tag">Problem 02</b><br>짧은 게임은 한 번 하고 닫으면 그만입니다. 다시 열 이유가 없습니다.</div>
+          <span class="pg-arrow" aria-hidden="true">&#8594;</span>
+          <div class="pg-cell g"><b class="pg-tag">Goal 02</b><br>랭킹&#183;도감&#183;레벨&#183;일일 미션&#183;보스 스트릭으로 <b>내일 다시 올 이유</b>를 만듭니다.</div>
+        </article>
+        <article class="pg-pair" data-step="03">
+          <div class="pg-cell"><b class="pg-tag">Problem 03</b><br>웹 게임은 첫 로딩이 길면 그대로 이탈합니다.</div>
+          <span class="pg-arrow" aria-hidden="true">&#8594;</span>
+          <div class="pg-cell g"><b class="pg-tag">Goal 03</b><br>첫 화면에 필요한 것만 받아오도록 폰트와 이미지를 쪼갭니다.</div>
+        </article>
       </div>
       </div>
     </section>
