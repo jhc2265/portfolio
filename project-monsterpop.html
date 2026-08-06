@@ -124,9 +124,10 @@
 
     .hero-visual .hero-main-phone .phone-screen { position: absolute; top: 1.54%; left: 4.53%; width: 90.95%; height: 97%; overflow: hidden; border-radius: 11% / 5%; z-index: 1; background: #07051a; }
 
-    .hero-visual .hero-main-phone .phone-screen img { position: absolute; inset: 0 auto 0 0; z-index: 1; width: 118% !important; height: 100% !important; object-fit: cover; object-position: left top; border-radius: 0; display: block; background: #07051a; transition: object-position 5.5s ease-in-out; }
+    /* 원본을 내용에 맞춰 잘라냈으므로 확대·좌측정렬 보정이 필요 없다 */
+    .hero-visual .hero-main-phone .phone-screen img { position: absolute; inset: 0; z-index: 1; width: 100% !important; height: 100% !important; object-fit: cover; object-position: center top; border-radius: 0; display: block; background: #07051a; transition: object-position 5.5s ease-in-out; }
 
-    .hero-main-phone.autoscroll:hover .phone-screen img { object-position: left bottom; }
+    .hero-main-phone.autoscroll:hover .phone-screen img { object-position: center bottom; }
 
     .hero-main-phone:hover { transform: rotate(0deg) translateY(-6px) scale(1.015); filter: drop-shadow(0 34px 52px rgba(5,0,24,.5)); }
 
