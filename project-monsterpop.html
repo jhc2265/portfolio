@@ -120,7 +120,8 @@
 
     .hero-phone { position: absolute; right: -22px; bottom: -28px; width: 156px; z-index: 3; filter: drop-shadow(0 10px 14px rgba(0,0,0,0.16)); }
 
-    .hero-main-phone { width: clamp(230px, 20vw, 300px); filter: drop-shadow(0 28px 42px rgba(5,0,24,.42)); transform: rotate(2deg); transition: transform .35s ease, filter .35s ease; }
+    /* 폰 한 대가 히어로를 혼자 채우므로 HOLO(215) · YENE(220)보다 조금 크게, 다만 300은 과하다 */
+    .hero-main-phone { width: clamp(210px, 17vw, 260px); filter: drop-shadow(0 28px 42px rgba(5,0,24,.42)); transform: rotate(2deg); transition: transform .35s ease, filter .35s ease; }
 
     .hero-visual .hero-main-phone .phone-screen { position: absolute; top: 1.54%; left: 4.53%; width: 90.95%; height: 97%; overflow: hidden; border-radius: 11% / 5%; z-index: 1; background: #07051a; }
 
@@ -135,7 +136,7 @@
 
     @media (max-width: 900px) {
       .hero-visual { min-height: 520px; padding: 34px 24px 48px; }
-      .hero-main-phone { width: min(250px, 72vw); }
+      .hero-main-phone { width: min(230px, 70vw); }
     }
 
     @media (prefers-reduced-motion: reduce) { .hero-main-phone { transition: none; } .hero-main-phone:hover { transform: rotate(2deg); } }
@@ -316,6 +317,10 @@
     .journey-visual { position: relative; min-height: 285px; overflow: hidden; background: #0b0824; isolation: isolate; }
     .journey-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .88; z-index: -2; }
     .journey-visual::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,3,20,.08), rgba(5,3,20,.78)); }
+    /* 실제 화면 캡처를 쓰는 카드 — 그림 소재와 달리 흐리게 깔지 않고 또렷하게 두고,
+       어둠은 글자가 놓인 위쪽에만 준다 */
+    .journey-bg.is-shot { opacity: 1; object-position: center 24%; }
+    .journey-visual.has-shot::after { background: linear-gradient(180deg, rgba(5,3,20,.72) 0%, rgba(5,3,20,.30) 38%, rgba(5,3,20,.06) 100%); }
     .journey-ui { position: absolute; inset: 0; padding: 18px 16px; display: flex; flex-direction: column; color: #fff; }
     .journey-kicker { font-size: 9px; font-weight: 900; letter-spacing: .14em; color: #d4c6ff; }
     .journey-title { margin-top: 6px; font-size: 17px; line-height: 1.15; font-weight: 900; }
@@ -523,9 +528,9 @@
           <div class="journey-copy"><small>STEP 01 · HOME</small><strong>오늘의 사냥 준비</strong><p>진행도와 일일 목표를 먼저 보여주고 일반 사냥과 보스전으로 연결합니다.</p></div>
         </article>
         <article class="journey-card">
-          <div class="journey-visual">
-            <img class="journey-bg" src="assets/projects/monsterpop/flow/battle-arena.webp" alt="" loading="lazy">
-            <div class="journey-ui"><span class="journey-kicker">30 SEC HUNT</span><strong class="journey-title">판단하고 바로 조작</strong><span class="journey-sub">몬스터마다 다른 입력으로 콤보를 이어갑니다.</span><div class="journey-monsters"><img src="assets/projects/monsterpop/flow/slime.webp" alt="말랑 슬라임" loading="lazy"><img src="assets/projects/monsterpop/flow/fox.webp" alt="네온 여우" loading="lazy"></div><div class="journey-hud"><span>COMBO</span><b>24</b><span>BURST READY</span></div></div>
+          <div class="journey-visual has-shot">
+            <img class="journey-bg is-shot" src="assets/projects/monsterpop/flow/game-play.webp" alt="사냥 화면 — 몬스터마다 다른 조작 표시" loading="lazy">
+            <div class="journey-ui"><span class="journey-kicker">30 SEC HUNT</span><strong class="journey-title">판단하고 바로 조작</strong><span class="journey-sub">몬스터마다 다른 입력으로 콤보를 이어갑니다.</span></div>
           </div>
           <div class="journey-copy"><small>STEP 02 · HUNT</small><strong>30초 집중 플레이</strong><p>탭·스와이프·더블탭·홀드를 시각·소리·진동 피드백으로 연결합니다.</p></div>
         </article>
