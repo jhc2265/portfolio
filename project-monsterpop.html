@@ -45,11 +45,10 @@
       background: #11072c;
     }
 
-    /* 배경은 분위기만 맡고 물러난다 — 살짝 흐리게 해 폰 화면과 초점이 겹치지 않게 */
-    .hero::before { content: ""; position: absolute; inset: -12px; z-index: -2; background: url("assets/projects/monsterpop/hero-bg.png") center / cover no-repeat; transform: scale(1.03); filter: blur(3px) saturate(.86); }
+    .hero::before { content: ""; position: absolute; inset: 0; z-index: -2; background: url("assets/projects/monsterpop/hero-bg.png") center / cover no-repeat; transform: scale(1.015); }
 
-    /* 오른쪽(폰이 서는 쪽)을 확실히 눌러 준다. 이전에는 .18로 거의 투명해 배경이 폰과 경쟁했다 */
-    .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(250,248,253,.52) 0%, rgba(248,244,253,.30) 40%, rgba(20,10,48,.34) 62%, rgba(11,6,32,.56) 82%, rgba(7,5,26,.66) 100%); }
+    /* 왼쪽 글자 쪽만 씻어내고 오른쪽 일러스트는 살려 둔다 */
+    .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(250,248,253,.50) 0%, rgba(248,244,253,.26) 42%, rgba(244,237,253,.08) 62%, rgba(13,6,37,.14) 82%, rgba(7,5,26,.26) 100%); }
 
     .hero-text { position: relative; z-index: 1; padding: 64px 72px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
 
@@ -122,15 +121,14 @@
 
     .hero-phone { position: absolute; right: -22px; bottom: -28px; width: 156px; z-index: 3; filter: drop-shadow(0 10px 14px rgba(0,0,0,0.16)); }
 
-    /* 폰 두 대 — 홈(앞)이 "무엇을 하는 앱인지", 사냥(뒤)이 "어떻게 노는지"를 맡는다 */
-    .hero-phones { position: relative; display: flex; align-items: center; justify-content: center; }
+    /* HOLO와 같은 배치 — 나란히 두 대, 겹치거나 기울이지 않고 한 대만 올린다.
+       홈이 "무엇을 하는 앱인지", 사냥이 "어떻게 노는지"를 맡는다 */
+    .hero-phones { display: flex; align-items: center; justify-content: center; gap: 18px; }
 
-    .hero-main-phone { position: relative; z-index: 2; width: clamp(200px, 16vw, 246px); filter: drop-shadow(0 28px 42px rgba(5,0,24,.5)); transform: rotate(2deg); transition: transform .35s ease, filter .35s ease; }
+    .hero-main-phone,
+    .hero-side-phone { position: relative; flex: none; width: clamp(168px, 14vw, 208px); filter: drop-shadow(0 26px 42px rgba(20,8,60,.34)); }
 
-    /* 뒤쪽은 작고 살짝 젖혀 세워 앞 폰과 위계를 만든다 */
-    .hero-side-phone { position: absolute; top: 50%; left: 50%; z-index: 1; width: clamp(150px, 12vw, 186px); transform: translate(-98%, -56%) rotate(-7deg); filter: drop-shadow(0 22px 34px rgba(5,0,24,.46)); transition: transform .35s ease; }
-
-    .hero-phones:hover .hero-side-phone { transform: translate(-102%, -58%) rotate(-9deg); }
+    .hero-side-phone { transform: translateY(-26px); }
 
     /* 두 대 모두에 적용 — 화면 영역은 프레임 안쪽에 맞춘다 */
     .hero-visual .phone .phone-screen { position: absolute; top: 1.54%; left: 4.53%; width: 90.95%; height: 97%; overflow: hidden; border-radius: 11% / 5%; z-index: 1; background: #07051a; }
@@ -144,9 +142,10 @@
 
     @media (max-width: 900px) {
       .hero-visual { min-height: 520px; padding: 34px 24px 48px; }
-      /* 좁은 화면에서는 두 대가 겹치면 서로 가린다 — 앞 폰만 두고 살짝 오른쪽으로 민다 */
-      .hero-main-phone { width: min(220px, 62vw); transform: translateX(9%) rotate(2deg); }
-      .hero-side-phone { width: min(168px, 47vw); transform: translate(-118%, -54%) rotate(-8deg); }
+      /* 좁은 화면에서는 두 대가 나란히 서면 각자 너무 작아진다 — 홈 한 대만 */
+      .hero-phones { gap: 0; }
+      .hero-main-phone { width: min(230px, 68vw); }
+      .hero-side-phone { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) { .hero-main-phone { transition: none; } .hero-main-phone:hover { transform: rotate(2deg); } }
@@ -404,8 +403,8 @@
       </div>
       <div class="hero-visual">
         <div class="hero-phones">
-          <div class="phone hero-side-phone"><span class="phone-screen"><img src="assets/projects/monsterpop/flow/game-play.webp" alt="MONSTER POP 사냥 화면"></span></div>
           <div class="phone hero-main-phone autoscroll"><span class="phone-screen"><img src="assets/projects/monsterpop/mobile-home.jpg" alt="MONSTER POP 모바일 홈 화면"></span></div>
+          <div class="phone hero-side-phone"><span class="phone-screen"><img src="assets/projects/monsterpop/flow/game-play.webp" alt="MONSTER POP 사냥 화면"></span></div>
         </div>
       </div>
     </section>
