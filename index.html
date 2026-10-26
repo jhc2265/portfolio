@@ -4330,12 +4330,12 @@
 
           // 호버: × 축소 + 라벨 표시
           var hoverSel =
-            'a, button, .work-card, .banner-item, .gallery-zoom, .banner-viewall, .contact-links a';
+            'a, button, .work-card, .banner-item, .detail-page, .gallery-zoom, .banner-viewall, .contact-links a';
           function labelFor(t) {
             if (t.dataset && t.dataset.cursor) return t.dataset.cursor;
             if (t.closest('.work-card.is-live')) return 'OPEN ↗';
             if (t.closest('.work-card, .feature-item')) return 'VIEW';
-            if (t.closest('.banner-item')) return 'ZOOM';
+            if (t.closest('.banner-item, .detail-page')) return 'ZOOM';
             if (t.closest('.contact-links a')) return 'CONTACT';
             return '';
           }
