@@ -1341,6 +1341,10 @@
         box-shadow: 0 16px 50px rgba(0, 0, 0, 0.4);
       }
 
+      .gallery.detail-gallery .gallery-scroll { gap: 0; }
+      .gallery.detail-gallery .gallery-scroll img:first-child { margin-bottom: 24px; }
+      .gallery.detail-gallery .gallery-scroll img:not(:first-child) { box-shadow: none; }
+
       /* Banner marquee */
       .banner-marquee {
         position: relative;
@@ -3099,15 +3103,15 @@
             </div>
             <h4 class="detail-pages-title">상세페이지 디자인</h4>
             <div class="detail-pages" aria-label="상세페이지 디자인 작업">
-              <article class="detail-page" data-title="방글 제주 청귤 콤부차" data-images="assets/detail-pages/jeju-kombucha.webp">
+              <article class="detail-page" data-title="방글 제주 청귤 콤부차" data-images="assets/banners/34-jeju-kombucha.webp,assets/detail-pages/jeju-kombucha-hd-1.webp,assets/detail-pages/jeju-kombucha-hd-2.webp">
                 <div class="banner-thumb"><img src="assets/banners/34-jeju-kombucha.webp" alt="방글 제주 청귤 콤부차 상세페이지 썸네일" loading="lazy"></div>
                 <div class="banner-cap"><b>방글 제주 청귤 콤부차</b><span>상세페이지</span></div>
               </article>
-              <article class="detail-page" data-title="Pawmeal" data-images="assets/detail-pages/pawmeal.webp">
+              <article class="detail-page" data-title="Pawmeal" data-images="assets/banners/35-pawmeal.webp,assets/detail-pages/pawmeal-hd.webp">
                 <div class="banner-thumb"><img src="assets/banners/35-pawmeal.webp" alt="Pawmeal 간식 상세페이지 썸네일" loading="lazy"></div>
                 <div class="banner-cap"><b>Pawmeal</b><span>상세페이지</span></div>
               </article>
-              <article class="detail-page" data-title="Peaché" data-images="assets/detail-pages/peache.webp">
+              <article class="detail-page" data-title="Peaché" data-images="assets/banners/36-peache.webp,assets/detail-pages/peache-hd-1.webp,assets/detail-pages/peache-hd-2.webp">
                 <div class="banner-thumb"><img src="assets/banners/36-peache.webp" alt="Peaché 그릭요거트 상세페이지 썸네일" loading="lazy"></div>
                 <div class="banner-cap"><b>Peaché</b><span>상세페이지</span></div>
               </article>
@@ -3673,6 +3677,7 @@
         }
         function close() {
           gal.classList.remove('show');
+          gal.classList.remove('detail-gallery');
           gal.setAttribute('aria-hidden', 'true');
           document.body.style.overflow = '';
         }
@@ -3683,6 +3688,7 @@
           c.addEventListener('click', function () {
             var imgs = (c.getAttribute('data-images') || '').split(',').filter(Boolean);
             if (!imgs.length) return;
+            gal.classList.toggle('detail-gallery', c.classList.contains('detail-page'));
             open(imgs, c.getAttribute('data-title') || '');
           });
         });
