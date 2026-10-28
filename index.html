@@ -2954,7 +2954,10 @@
                 <span class="block-count">33 works</span>
               </div>
             </div>
-            <div class="banner-viewall-bar"><button class="banner-viewall" type="button" aria-label="배너 전체 보기">전체 보기 →</button></div>
+            <div class="banner-viewall-bar">
+              <h4>배너 디자인</h4>
+              <button class="banner-viewall" type="button" aria-label="배너 전체 보기">전체 보기 →</button>
+            </div>
             <div class="banner-marquee" aria-label="Banner works marquee">
               <!-- Row 1 : flows left -->
               <div class="marquee">
@@ -4599,7 +4602,8 @@
         background:none !important; padding:0 !important; color:rgba(255,255,255,0.72) !important;
         font-family:"Space Mono", ui-monospace, monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
       }
-      .banner-viewall-bar{ padding: 14px 26px 4px; }
+      .banner-viewall-bar{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:24px 20px 0; }
+      .banner-viewall-bar h4{ margin:0; font-size:18px; }
       /* 순차로 차오름 — 웹 → 배너 → 비주얼 순으로 텀(각 카테고리는 스크롤로 도달할 때 재생).
          문구 딜레이 = 색 딜레이 + 0.9s (색이 윗부분까지 찬 뒤 등장) */
       #cat-web   .block-head::before{ transition-delay:0s;   }
